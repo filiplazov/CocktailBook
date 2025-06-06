@@ -18,6 +18,10 @@
 		E8324EC726207B6100FD2124 /* CocktailsAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324EC626207B6100FD2124 /* CocktailsAPIError.swift */; };
 		E8324ECC26207B9100FD2124 /* FakeCocktailsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324ECB26207B9100FD2124 /* FakeCocktailsAPI.swift */; };
 		E8324ED42624809F00FD2124 /* sample.json in Resources */ = {isa = PBXBuildFile; fileRef = E8324ED32624809F00FD2124 /* sample.json */; };
+		E8324ED52624809F00FD2125 /* Cocktail.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324ED42624809F00FD2125 /* Cocktail.swift */; };
+		E8324ED62624809F00FD2126 /* CocktailDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324ED52624809F00FD2126 /* CocktailDataManager.swift */; };
+		E8324ED72624809F00FD2127 /* CocktailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324ED62624809F00FD2127 /* CocktailTableViewCell.swift */; };
+		E8324ED82624809F00FD2128 /* CocktailDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8324ED72624809F00FD2128 /* CocktailDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +59,10 @@
 		E8324EC626207B6100FD2124 /* CocktailsAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocktailsAPIError.swift; sourceTree = "<group>"; };
 		E8324ECB26207B9100FD2124 /* FakeCocktailsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCocktailsAPI.swift; sourceTree = "<group>"; };
 		E8324ED32624809F00FD2124 /* sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sample.json; sourceTree = "<group>"; };
+		E8324ED42624809F00FD2125 /* Cocktail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cocktail.swift; sourceTree = "<group>"; };
+		E8324ED52624809F00FD2126 /* CocktailDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocktailDataManager.swift; sourceTree = "<group>"; };
+		E8324ED62624809F00FD2127 /* CocktailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocktailTableViewCell.swift; sourceTree = "<group>"; };
+		E8324ED72624809F00FD2128 /* CocktailDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocktailDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +120,10 @@
 				E8324E84262076EE00FD2124 /* LaunchScreen.storyboard */,
 				E8324E87262076EE00FD2124 /* Info.plist */,
 				E8324EAC2620774B00FD2124 /* MainScreenViewController.swift */,
+				E8324ED42624809F00FD2125 /* Cocktail.swift */,
+				E8324ED52624809F00FD2126 /* CocktailDataManager.swift */,
+				E8324ED62624809F00FD2127 /* CocktailTableViewCell.swift */,
+				E8324ED72624809F00FD2128 /* CocktailDetailViewController.swift */,
 			);
 			path = CocktailBook;
 			sourceTree = "<group>";
@@ -281,6 +293,10 @@
 				E8324E7A262076EB00FD2124 /* AppDelegate.swift in Sources */,
 				E8324EAD2620774B00FD2124 /* MainScreenViewController.swift in Sources */,
 				E8324E7C262076EB00FD2124 /* SceneDelegate.swift in Sources */,
+				E8324ED52624809F00FD2125 /* Cocktail.swift in Sources */,
+				E8324ED62624809F00FD2126 /* CocktailDataManager.swift in Sources */,
+				E8324ED72624809F00FD2127 /* CocktailTableViewCell.swift in Sources */,
+				E8324ED82624809F00FD2128 /* CocktailDetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
