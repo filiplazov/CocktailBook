@@ -70,7 +70,7 @@ class MainScreenViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
-        loadCocktails()
+        loadData()
     }
     
     private func setupUI() {
@@ -154,9 +154,9 @@ class MainScreenViewController: UIViewController {
         title = currentFilter.title
     }
     
-    private func loadCocktails() {
+    private func loadData() {
         showLoading(true)
-        dataManager.loadCocktails()
+        dataManager.loadData()
     }
     
     private func showLoading(_ show: Bool) {
@@ -193,7 +193,7 @@ class MainScreenViewController: UIViewController {
     }
     
     @objc private func retryButtonTapped() {
-        loadCocktails()
+        loadData()
     }
 }
 

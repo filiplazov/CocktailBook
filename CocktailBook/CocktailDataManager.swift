@@ -1,5 +1,13 @@
 import Foundation
 
+protocol UserDefaultsProtocol {
+    func array(forKey defaultName: String) -> [Any]?
+    func set(_ value: Any?, forKey defaultName: String)
+    func removeObject(forKey defaultName: String)
+}
+
+extension UserDefaults: UserDefaultsProtocol {}
+
 protocol CocktailDataManagerDelegate: AnyObject {
     func dataManagerDidUpdateCocktails(_ manager: CocktailDataManager)
     func dataManagerDidFailToLoadCocktails(_ manager: CocktailDataManager, error: Error)
@@ -10,6 +18,7 @@ class CocktailDataManager {
     weak var delegate: CocktailDataManagerDelegate?
     
     private let cocktailsAPI: CocktailsAPI
+    private let userDefaults: UserDefaultsProtocol
     private let favoritesKey = "FavoriteCocktailIDs"
     
     private var allCocktails: [Cocktail] = []
@@ -23,9 +32,14 @@ class CocktailDataManager {
         }
     }
     
-    init(cocktailsAPI: CocktailsAPI) {
+    init(cocktailsAPI: CocktailsAPI, userDefaults: UserDefaultsProtocol = UserDefaults.standard) {
         self.cocktailsAPI = cocktailsAPI
+        self.userDefaults = userDefaults
+    }
+    
+    func loadData() {
         loadFavorites()
+        loadCocktails()
     }
     
     func loadCocktails() {
@@ -84,12 +98,12 @@ class CocktailDataManager {
     }
     
     private func loadFavorites() {
-        if let data = UserDefaults.standard.array(forKey: favoritesKey) as? [String] {
+        if let data = userDefaults.array(forKey: favoritesKey) as? [String] {
             favoriteCocktailIDs = Set(data)
         }
     }
     
     private func saveFavorites() {
-        UserDefaults.standard.set(Array(favoriteCocktailIDs), forKey: favoritesKey)
+        userDefaults.set(Array(favoriteCocktailIDs), forKey: favoritesKey)
     }
 } 
