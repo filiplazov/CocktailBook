@@ -1,109 +1,176 @@
 import Foundation
+import Combine
+import CombineSchedulers
 
-protocol UserDefaultsProtocol {
-    func array(forKey defaultName: String) -> [Any]?
-    func set(_ value: Any?, forKey defaultName: String)
-    func removeObject(forKey defaultName: String)
-}
 
-extension UserDefaults: UserDefaultsProtocol {}
 
-protocol CocktailDataManagerDelegate: AnyObject {
-    func dataManagerDidUpdateCocktails(_ manager: CocktailDataManager)
-    func dataManagerDidFailToLoadCocktails(_ manager: CocktailDataManager, error: Error)
-}
-
-class CocktailDataManager {
+class CocktailDataManager: ObservableObject {
     
-    weak var delegate: CocktailDataManagerDelegate?
+    // MARK: - Published Properties
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
+    @Published var allCocktails: [Cocktail] = []
+    @Published var filteredCocktails: [Cocktail] = []
+    @Published var filterType: FilterType = .all
     
+    // MARK: - Private Properties
     private let cocktailsAPI: CocktailsAPI
     private let userDefaults: UserDefaultsProtocol
     private let favoritesKey = "FavoriteCocktailIDs"
+    private let scheduler: AnySchedulerOf<DispatchQueue>
+    private var cancellables = Set<AnyCancellable>()
     
-    private var allCocktails: [Cocktail] = []
-    private var favoriteCocktailIDs: Set<String> = []
+    // MARK: - Computed Properties
+    var favoriteCocktailIDs: [String] {
+        return userDefaults.array(forKey: favoritesKey) as? [String] ?? []
+    }
     
-    var cocktails: [Cocktail] {
-        return allCocktails.map { cocktail in
+    // MARK: - Initialization
+    init(
+        cocktailsAPI: CocktailsAPI = FakeCocktailsAPI(),
+        userDefaults: UserDefaultsProtocol = UserDefaults.standard,
+        scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
+    ) {
+        self.cocktailsAPI = cocktailsAPI
+        self.userDefaults = userDefaults
+        self.scheduler = scheduler
+        
+        // Set up automatic filtering when allCocktails or filterType changes
+        Publishers.CombineLatest($allCocktails, $filterType)
+            .map { [weak self] allCocktails, filterType in
+                self?.filterCocktails(allCocktails, by: filterType) ?? []
+            }
+            .assign(to: &$filteredCocktails)
+    }
+    
+    // MARK: - Public Methods
+    
+    /// Sets the filter type and triggers filtering
+    func setFilterType(_ filterType: FilterType) {
+        self.filterType = filterType
+    }
+    
+    /// Loads all cocktails from the API
+    func loadData() {
+        isLoading = true
+        errorMessage = nil
+        
+        cocktailsAPI.cocktailsPublisher
+            .receive(on: scheduler)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    self?.isLoading = false
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        self?.handleError(error)
+                    }
+                },
+                receiveValue: { [weak self] data in
+                    self?.parseCocktailsData(data)
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+
+    
+
+    
+    /// Toggles the favorite status of a cocktail
+    func toggleFavorite(cocktailID: String) {
+        var favoriteIDs = favoriteCocktailIDs
+        
+        if favoriteIDs.contains(cocktailID) {
+            favoriteIDs.removeAll { $0 == cocktailID }
+        } else {
+            favoriteIDs.append(cocktailID)
+        }
+        
+        userDefaults.set(favoriteIDs, forKey: favoritesKey)
+        
+        // Update the displayed cocktails to reflect favorite status
+        updateCocktailFavoriteStatus()
+        
+        // Trigger filtering update by re-assigning filterType
+        let currentFilter = filterType
+        filterType = currentFilter
+        
+        // Notify view to update by triggering objectWillChange
+        objectWillChange.send()
+    }
+    
+    /// Checks if a cocktail is marked as favorite
+    func isFavorite(cocktailID: String) -> Bool {
+        return favoriteCocktailIDs.contains(cocktailID)
+    }
+    
+
+    
+    // MARK: - Private Methods
+    
+
+    
+    private func parseCocktailsData(_ data: Data) {
+        do {
+            let decoder = JSONDecoder()
+            allCocktails = try decoder.decode([Cocktail].self, from: data)
+            updateCocktailFavoriteStatus()
+        } catch {
+            handleError(CocktailsAPIError.unavailable)
+        }
+    }
+    
+
+    
+
+    
+
+    
+    private func updateCocktailFavoriteStatus() {
+        let favoriteIDs = favoriteCocktailIDs
+        
+        // Update allCocktails
+        allCocktails = allCocktails.map { cocktail in
             var updatedCocktail = cocktail
-            updatedCocktail.isFavorite = favoriteCocktailIDs.contains(cocktail.id)
+            updatedCocktail.isFavorite = favoriteIDs.contains(cocktail.id)
             return updatedCocktail
         }
     }
     
-    init(cocktailsAPI: CocktailsAPI, userDefaults: UserDefaultsProtocol = UserDefaults.standard) {
-        self.cocktailsAPI = cocktailsAPI
-        self.userDefaults = userDefaults
-    }
-    
-    func loadData() {
-        loadFavorites()
-        loadCocktails()
-    }
-    
-    func loadCocktails() {
-        cocktailsAPI.fetchCocktails { [weak self] result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decodedCocktails = try JSONDecoder().decode([Cocktail].self, from: data)
-                    self?.allCocktails = decodedCocktails
-                    DispatchQueue.main.async {
-                        self?.delegate?.dataManagerDidUpdateCocktails(self!)
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        self?.delegate?.dataManagerDidFailToLoadCocktails(self!, error: error)
-                    }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self?.delegate?.dataManagerDidFailToLoadCocktails(self!, error: error)
-                }
-            }
+    private func handleError(_ error: Error) {
+        if let apiError = error as? CocktailsAPIError {
+            errorMessage = apiError.errorDescription
+        } else {
+            errorMessage = "An unexpected error occurred: \(error.localizedDescription)"
         }
     }
     
-    func filteredCocktails(for filterType: FilterType) -> [Cocktail] {
-        let cocktailsToFilter = cocktails
+    /// Filters cocktails based on the given filter type
+    private func filterCocktails(_ allCocktails: [Cocktail], by filterType: FilterType) -> [Cocktail] {
+        // Add favorite status to cocktails
+        let cocktailsWithFavorites = allCocktails.map { cocktail in
+            var mutableCocktail = cocktail
+            mutableCocktail.isFavorite = isFavorite(cocktailID: cocktail.id)
+            return mutableCocktail
+        }
         
-        let filtered: [Cocktail]
+        // Filter by type
+        let filteredByType: [Cocktail]
         switch filterType {
         case .all:
-            filtered = cocktailsToFilter
+            filteredByType = cocktailsWithFavorites
         case .alcoholic:
-            filtered = cocktailsToFilter.filter { $0.type == .alcoholic }
+            filteredByType = cocktailsWithFavorites.filter { $0.type == .alcoholic }
         case .nonAlcoholic:
-            filtered = cocktailsToFilter.filter { $0.type == .nonAlcoholic }
+            filteredByType = cocktailsWithFavorites.filter { $0.type == .nonAlcoholic }
         }
         
-        // Sort with favorites first, then alphabetically within each group
-        return filtered.sorted { lhs, rhs in
-            if lhs.isFavorite != rhs.isFavorite {
-                return lhs.isFavorite
-            }
-            return lhs.name < rhs.name
-        }
-    }
-    
-    func toggleFavorite(for cocktailID: String) {
-        if favoriteCocktailIDs.contains(cocktailID) {
-            favoriteCocktailIDs.remove(cocktailID)
-        } else {
-            favoriteCocktailIDs.insert(cocktailID)
-        }
-        saveFavorites()
-        delegate?.dataManagerDidUpdateCocktails(self)
-    }
-    
-    private func loadFavorites() {
-        if let data = userDefaults.array(forKey: favoritesKey) as? [String] {
-            favoriteCocktailIDs = Set(data)
-        }
-    }
-    
-    private func saveFavorites() {
-        userDefaults.set(Array(favoriteCocktailIDs), forKey: favoritesKey)
+        // Sort with favorites first, then alphabetically within each section
+        let favorites = filteredByType.filter { $0.isFavorite }.sorted { $0.name < $1.name }
+        let nonFavorites = filteredByType.filter { !$0.isFavorite }.sorted { $0.name < $1.name }
+        
+        return favorites + nonFavorites
     }
 } 

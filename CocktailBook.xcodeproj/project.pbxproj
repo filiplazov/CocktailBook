@@ -6,6 +6,11 @@
 	objectVersion = 70;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AE17F2642DF472970086F988 /* CombineSchedulers in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F0E12DF449000086F988 /* CombineSchedulers */; };
+		AE17F2652DF472970086F988 /* CombineSchedulers in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F0E32DF449050086F988 /* CombineSchedulers */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E8324E8D262076EE00FD2124 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -49,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE17F2642DF472970086F988 /* CombineSchedulers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE17F2652DF472970086F988 /* CombineSchedulers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +108,9 @@
 				AE17F0C52DF448D20086F988 /* CocktailBook */,
 			);
 			name = CocktailBook;
+			packageProductDependencies = (
+				AE17F0E12DF449000086F988 /* CombineSchedulers */,
+			);
 			productName = CocktailBook;
 			productReference = E8324E76262076EB00FD2124 /* CocktailBook.app */;
 			productType = "com.apple.product-type.application";
@@ -122,6 +132,9 @@
 				AE17F0D42DF448DA0086F988 /* CocktailBookTests */,
 			);
 			name = CocktailBookTests;
+			packageProductDependencies = (
+				AE17F0E32DF449050086F988 /* CombineSchedulers */,
+			);
 			productName = CocktailBookTests;
 			productReference = E8324E8C262076EE00FD2124 /* CocktailBookTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -153,6 +166,9 @@
 				Base,
 			);
 			mainGroup = E8324E6D262076EB00FD2124;
+			packageReferences = (
+				AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */,
+			);
 			productRefGroup = E8324E77262076EB00FD2124 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,7 +273,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -312,7 +328,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -331,7 +347,7 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CocktailBook/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -352,7 +368,7 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CocktailBook/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -370,7 +386,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CocktailBookTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -390,7 +406,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = CocktailBookTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -435,6 +451,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/combine-schedulers";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AE17F0E12DF449000086F988 /* CombineSchedulers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */;
+			productName = CombineSchedulers;
+		};
+		AE17F0E32DF449050086F988 /* CombineSchedulers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */;
+			productName = CombineSchedulers;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E8324E6E262076EB00FD2124 /* Project object */;
 }
