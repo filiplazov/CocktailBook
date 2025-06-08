@@ -1,5 +1,7 @@
 import SwiftUI
 
+import CocktailsKit
+
 struct CocktailDetailView: View {
     let cocktail: Cocktail
     let dataManager: CocktailDataManager

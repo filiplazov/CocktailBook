@@ -1,9 +1,9 @@
 import Foundation
 import Combine
 
-class FakeCocktailsAPI: CocktailsAPI {
+public class FakeCocktailsAPI: CocktailsAPI {
     
-    enum CocktailAPIFailure {
+    public enum CocktailAPIFailure {
         case never
         case count(UInt)
     }
@@ -12,8 +12,8 @@ class FakeCocktailsAPI: CocktailsAPI {
     private let jsonData: Data
     private var failure: CocktailAPIFailure
     
-    init(withFailure failure: CocktailAPIFailure = .never) {
-        guard let file = Bundle.main.url(forResource: "sample", withExtension: "json") else {
+    public init(withFailure failure: CocktailAPIFailure = .never) {
+        guard let file = Bundle.module.url(forResource: "sample", withExtension: "json") else {
             fatalError("sample.json can not be found")
         }
         guard let data = try? Data(contentsOf: file) else {
@@ -23,7 +23,7 @@ class FakeCocktailsAPI: CocktailsAPI {
         self.failure = failure
     }
     
-    var cocktailsPublisher: AnyPublisher<Data, CocktailsAPIError> {
+    public var cocktailsPublisher: AnyPublisher<Data, CocktailsAPIError> {
         if case let .count(count) = failure {
             failure = count - 1 == 0 ? .never : .count(count - 1)
             return Future<Data, CocktailsAPIError> { [weak self] promise in
@@ -44,7 +44,7 @@ class FakeCocktailsAPI: CocktailsAPI {
         .eraseToAnyPublisher()
     }
     
-    func fetchCocktails(_ handler: @escaping (Result<Data, CocktailsAPIError>) -> Void) {
+    public func fetchCocktails(_ handler: @escaping (Result<Data, CocktailsAPIError>) -> Void) {
         if case let .count(count) = failure {
             failure = count - 1 == 0 ? .never : .count(count - 1)
             queue.async {
@@ -59,4 +59,4 @@ class FakeCocktailsAPI: CocktailsAPI {
             handler(.success(data))
         }
     }
-}
+} 

@@ -2,6 +2,8 @@ import Combine
 import CombineSchedulers
 import Foundation
 
+import CocktailsKit
+
 class CocktailDataManager: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading: Bool = false

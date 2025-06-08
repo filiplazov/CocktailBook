@@ -1,7 +1,9 @@
-@testable import CocktailBook
 import Combine
 import CombineSchedulers
 import XCTest
+
+@testable import CocktailBook
+import CocktailsKit
 
 final class CocktailDataManagerTests: XCTestCase {
     var dataManager: CocktailDataManager!

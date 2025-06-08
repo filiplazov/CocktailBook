@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		AE17F2642DF472970086F988 /* CombineSchedulers in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F0E12DF449000086F988 /* CombineSchedulers */; };
 		AE17F2652DF472970086F988 /* CombineSchedulers in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F0E32DF449050086F988 /* CombineSchedulers */; };
+		AE17F3002DF473000086F988 /* CocktailsKit in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F2FF2DF473000086F988 /* CocktailsKit */; };
+		AE17F3012DF473010086F988 /* CocktailsKit in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F3002DF473010086F988 /* CocktailsKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +46,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		AE17F0B52DF448CE0086F988 /* CocktailsAPI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CocktailsAPI; sourceTree = "<group>"; };
 		AE17F0C52DF448D20086F988 /* CocktailBook */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (AE17F0D02DF448D20086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CocktailBook; sourceTree = "<group>"; };
 		AE17F0D42DF448DA0086F988 /* CocktailBookTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (AE17F0D82DF448DA0086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CocktailBookTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -55,6 +56,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE17F2642DF472970086F988 /* CombineSchedulers in Frameworks */,
+				AE17F3002DF473000086F988 /* CocktailsKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +65,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE17F2652DF472970086F988 /* CombineSchedulers in Frameworks */,
+				AE17F3012DF473010086F988 /* CocktailsKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +75,6 @@
 		E8324E6D262076EB00FD2124 = {
 			isa = PBXGroup;
 			children = (
-				AE17F0B52DF448CE0086F988 /* CocktailsAPI */,
 				AE17F0C52DF448D20086F988 /* CocktailBook */,
 				AE17F0D42DF448DA0086F988 /* CocktailBookTests */,
 				E8324E77262076EB00FD2124 /* Products */,
@@ -105,12 +107,12 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				AE17F0B52DF448CE0086F988 /* CocktailsAPI */,
 				AE17F0C52DF448D20086F988 /* CocktailBook */,
 			);
 			name = CocktailBook;
 			packageProductDependencies = (
 				AE17F0E12DF449000086F988 /* CombineSchedulers */,
+				AE17F2FF2DF473000086F988 /* CocktailsKit */,
 			);
 			productName = CocktailBook;
 			productReference = E8324E76262076EB00FD2124 /* CocktailBook.app */;
@@ -135,6 +137,7 @@
 			name = CocktailBookTests;
 			packageProductDependencies = (
 				AE17F0E32DF449050086F988 /* CombineSchedulers */,
+				AE17F3002DF473010086F988 /* CocktailsKit */,
 			);
 			productName = CocktailBookTests;
 			productReference = E8324E8C262076EE00FD2124 /* CocktailBookTests.xctest */;
@@ -169,6 +172,7 @@
 			mainGroup = E8324E6D262076EB00FD2124;
 			packageReferences = (
 				AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */,
+				AE17F2FE2DF473000086F988 /* XCLocalSwiftPackageReference "CocktailsKit" */,
 			);
 			productRefGroup = E8324E77262076EB00FD2124 /* Products */;
 			projectDirPath = "";
@@ -197,14 +201,7 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXSourcesBuildPhase section */
-		E8324E72262076EB00FD2124 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+/* Begin PBXShellScriptBuildPhase section */
 		42E411D69F4A490A8A8A8B8C003273F2 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -226,6 +223,16 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# SwiftLint Integration for Xcode\nif [ \"${CONFIGURATION}\" = \"Release\" ]; then\n    echo \"Skipping SwiftLint for Release build\"\n    exit 0\nfi\n\nif which swiftlint >/dev/null; then\n    echo \"Running SwiftLint...\"\n    swiftlint lint --reporter xcode\nelse\n    echo \"warning: SwiftLint not installed. Install with: brew install swiftlint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E8324E72262076EB00FD2124 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E8324E88262076EE00FD2124 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -475,6 +482,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		AE17F2FE2DF473000086F988 /* XCLocalSwiftPackageReference "CocktailsKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = CocktailsKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -496,6 +510,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AE17F0E02DF449000086F988 /* XCRemoteSwiftPackageReference "combine-schedulers" */;
 			productName = CombineSchedulers;
+		};
+		AE17F2FF2DF473000086F988 /* CocktailsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE17F2FE2DF473000086F988 /* XCLocalSwiftPackageReference "CocktailsKit" */;
+			productName = CocktailsKit;
+		};
+		AE17F3002DF473010086F988 /* CocktailsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AE17F2FE2DF473000086F988 /* XCLocalSwiftPackageReference "CocktailsKit" */;
+			productName = CocktailsKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

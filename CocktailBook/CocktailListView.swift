@@ -1,9 +1,10 @@
 import Combine
 import SwiftUI
 
+import CocktailsKit
+
 struct CocktailListView: View {
     @StateObject private var dataManager: CocktailDataManager
-
     init(dataManager: CocktailDataManager = CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())) {
         self._dataManager = StateObject(wrappedValue: dataManager)
     }

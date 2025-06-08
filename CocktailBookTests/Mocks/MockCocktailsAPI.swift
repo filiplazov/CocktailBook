@@ -1,6 +1,8 @@
-@testable import CocktailBook
 import Combine
 import Foundation
+
+@testable import CocktailBook
+import CocktailsKit
 
 class MockCocktailsAPI: CocktailsAPI {
     var shouldFail = false
