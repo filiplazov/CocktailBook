@@ -227,4 +227,62 @@ final class CocktailDataManagerTests: XCTestCase {
         // Then
         XCTAssertTrue(newDataManager.favoriteCocktailIDs.isEmpty)
     }
+    
+    // MARK: - Ingredient Display String Tests
+    
+    func testIngredientDisplayString_WithImperialSystem_ReturnsImperialAmounts() {
+        // Given
+        let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
+        
+        // When
+        let displayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
+        
+        // Then
+        XCTAssertEqual(displayString, "2 oz Tequila")
+    }
+    
+    func testIngredientDisplayString_WithMetricSystem_ReturnsMetricAmounts() {
+        // Given
+        let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
+        
+        // When
+        let displayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
+        
+        // Then
+        XCTAssertEqual(displayString, "60 ml Tequila")
+    }
+    
+    func testIngredientDisplayString_WithEmptyAmounts_ReturnsIngredientNameOnly() {
+        // Given
+        let ingredient = Ingredient(imperialAmount: "", name: "Salt", metricAmount: "")
+        
+        // When - Imperial system
+        let imperialDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
+        
+        // Then
+        XCTAssertEqual(imperialDisplayString, "Salt")
+        
+        // When - Metric system
+        let metricDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
+        
+        // Then
+        XCTAssertEqual(metricDisplayString, "Salt")
+    }
+    
+    func testIngredientDisplayString_WithOnlyImperialAmount_ReturnsAppropriateDisplay() {
+        // Given
+        let ingredient = Ingredient(imperialAmount: "1 pinch", name: "Black pepper", metricAmount: "")
+        
+        // When - Imperial system
+        let imperialDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
+        
+        // Then
+        XCTAssertEqual(imperialDisplayString, "1 pinch Black pepper")
+        
+        // When - Metric system (should fallback to just name when metric is empty)
+        let metricDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
+        
+        // Then
+        XCTAssertEqual(metricDisplayString, "Black pepper")
+    }
 }

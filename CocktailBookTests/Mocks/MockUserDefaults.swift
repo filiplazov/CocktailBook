@@ -15,4 +15,8 @@ class MockUserDefaults: UserDefaultsProtocol {
     func removeObject(forKey defaultName: String) {
         storage.removeValue(forKey: defaultName)
     }
+    
+    func object(forKey defaultName: String) -> Any? {
+        storage[defaultName]
+    }
 }

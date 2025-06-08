@@ -3,6 +3,8 @@ import CocktailsKit
 
 struct CocktailListView: View {
     @ObservedObject var dataManager: CocktailDataManager
+    @ObservedObject var settingsManager: SettingsManager
+    @State private var showingSettings = false
     
     var body: some View {
         NavigationView {
@@ -50,7 +52,8 @@ struct CocktailListView: View {
                     List(dataManager.filteredCocktails) { cocktail in
                         NavigationLink(destination: CocktailDetailView(
                             cocktail: cocktail,
-                            dataManager: dataManager
+                            dataManager: dataManager,
+                            settingsManager: settingsManager
                         )) {
                             CocktailRowView(
                                 cocktail: cocktail,
@@ -65,6 +68,19 @@ struct CocktailListView: View {
             }
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.title3)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(settingsManager: settingsManager)
+            }
         }
         .task {
             if dataManager.allCocktails.isEmpty && !dataManager.isLoading && dataManager.errorMessage == nil {
@@ -132,9 +148,10 @@ struct CocktailRowView: View {
     @MainActor
     struct PreviewWrapper: View {
         @StateObject private var dataManager = CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())
+        @StateObject private var settingsManager = SettingsManager()
         
         var body: some View {
-            CocktailListView(dataManager: dataManager)
+            CocktailListView(dataManager: dataManager, settingsManager: settingsManager)
         }
     }
     

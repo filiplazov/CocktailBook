@@ -80,6 +80,16 @@ final class CocktailDataManager: ObservableObject {
     func isFavorite(cocktailID: String) -> Bool {
         favoriteCocktailIDs.contains(cocktailID)
     }
+    
+    /// Returns the appropriate display string for an ingredient based on measurement system
+    func ingredientDisplayString(for ingredient: Ingredient, measurementSystem: MeasurementSystem) -> String {
+        switch measurementSystem {
+        case .imperial:
+            return ingredient.displayString
+        case .metric:
+            return ingredient.metricDisplayString
+        }
+    }
 
     // MARK: - Private Methods
 

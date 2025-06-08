@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
 		AE17F3002DF473000086F988 /* CocktailsKit in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F2FF2DF473000086F988 /* CocktailsKit */; };
 		AE17F3012DF473010086F988 /* CocktailsKit in Frameworks */ = {isa = PBXBuildFile; productRef = AE17F3002DF473010086F988 /* CocktailsKit */; };
 /* End PBXBuildFile section */
@@ -485,12 +484,7 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-
 		AE17F2FF2DF473000086F988 /* CocktailsKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AE17F2FE2DF473000086F988 /* XCLocalSwiftPackageReference "CocktailsKit" */;

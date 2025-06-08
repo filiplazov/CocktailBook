@@ -1,16 +1,17 @@
 import SwiftUI
-
 import CocktailsKit
 
 struct CocktailDetailView: View {
     let cocktail: Cocktail
     let dataManager: CocktailDataManager
+    let settingsManager: SettingsManager
     
     @State private var isFavorite: Bool
     
-    init(cocktail: Cocktail, dataManager: CocktailDataManager) {
+    init(cocktail: Cocktail, dataManager: CocktailDataManager, settingsManager: SettingsManager) {
         self.cocktail = cocktail
         self.dataManager = dataManager
+        self.settingsManager = settingsManager
         self._isFavorite = State(initialValue: cocktail.isFavorite)
     }
     
@@ -53,7 +54,7 @@ struct CocktailDetailView: View {
                             Image(systemName: "circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.orange)
-                            Text(ingredient.displayString)
+                            Text(dataManager.ingredientDisplayString(for: ingredient, measurementSystem: settingsManager.measurementSystem))
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .multilineTextAlignment(.leading)
@@ -85,6 +86,8 @@ struct CocktailDetailView: View {
             isFavorite = dataManager.isFavorite(cocktailID: cocktail.id)
         }
     }
+    
+
 }
 
 #Preview {
@@ -105,6 +108,7 @@ struct CocktailDetailView: View {
                 Ingredient(imperialAmount: "", name: "Salt", metricAmount: "")
             ]
         ),
-        dataManager: CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())
+        dataManager: CocktailDataManager(cocktailsAPI: FakeCocktailsAPI()),
+        settingsManager: SettingsManager()
     )
 }

@@ -137,6 +137,15 @@ actor FakeCocktailsAPI: CocktailsAPI {
 - Favorites management with UserDefaults persistence
 - Error handling and loading states
 
+### 3. SettingsManager (Settings ViewModel)
+**Purpose**: User preferences management with @MainActor for UI binding
+
+**Key Responsibilities**:
+- Measurement system preference management
+- UserDefaults persistence with automatic synchronization
+- Observable state updates for UI binding
+- Default value handling (Imperial as default)
+
 **Key Features**:
 ```swift
 @MainActor
@@ -161,28 +170,65 @@ final class CocktailDataManager: ObservableObject {
 - @MainActor ensures UI updates happen on main thread
 - Sendable conformance for thread-safe data models
 
-### 3. SwiftUI Views
+**SettingsManager Implementation**:
+```swift
+@MainActor
+final class SettingsManager: ObservableObject {
+    @Published var measurementSystem: MeasurementSystem {
+        didSet {
+            userDefaults.set(measurementSystem.rawValue, forKey: UserDefaultsKeys.measurementSystem)
+        }
+    }
+    
+    private let userDefaults: UserDefaultsProtocol
+    
+    init(userDefaults: UserDefaultsProtocol = UserDefaults.standard) {
+        // Auto-loads saved preference or defaults to imperial
+    }
+}
+```
+
+### 4. SwiftUI Views
 
 #### CocktailListView
 - **Purpose**: Main screen displaying filtered cocktail list
-- **Features**: Search filtering, category segmented control, favorites indicator
-- **Navigation**: NavigationStack with detail view navigation
+- **Features**: Search filtering, category segmented control, favorites indicator, settings navigation
+- **Navigation**: NavigationStack with detail view navigation and settings modal presentation
+- **Settings Access**: Top-left gear icon button for accessing user preferences
 
 #### CocktailDetailView  
 - **Purpose**: Detailed cocktail information display
-- **Features**: Image display, ingredients list, preparation time, favorite toggle
+- **Features**: Image display, ingredients list (with measurement system support), preparation time, favorite toggle
 - **Layout**: ScrollView with proper text wrapping and responsive design
+- **Measurement Display**: Dynamic ingredient amounts based on user's measurement system preference
 
-### 4. Data Models
+#### SettingsView
+- **Purpose**: User preferences configuration with Apple-style settings UI
+- **Features**: Measurement system toggle (Imperial/Metric), native Form styling
+- **Persistence**: Settings automatically saved to UserDefaults
+- **Navigation**: Modal presentation with Done button dismissal
+
+### 5. Data Models
 
 #### Cocktail
 - **Type**: `Codable` struct for JSON parsing
 - **Properties**: ID, name, type, descriptions, ingredients, preparation time, image
 - **Features**: Computed properties, mutable favorite status
 
+#### Ingredient
+- **Type**: `Codable` struct with dual measurement system support
+- **Properties**: `imperialAmount`, `metricAmount`, `name`
+- **Features**: Display string computed properties for both measurement systems
+- **Backward Compatibility**: JSON decoding maps legacy "amount" field to "imperialAmount"
+
 #### FilterType
 - **Type**: Enum for cocktail categorization
 - **Cases**: `.all`, `.alcoholic`, `.nonAlcoholic`
+
+#### MeasurementSystem
+- **Type**: Enum for user measurement preferences
+- **Cases**: `.imperial` (default), `.metric`
+- **Features**: Display names, raw value persistence, Sendable conformance
 
 ---
 
@@ -213,16 +259,30 @@ func testCocktailDecoding_WithValidJSON_ReturnsExpectedCocktail()
 - ✅ Filtering by type (all/alcoholic/non-alcoholic)
 - ✅ Sorting logic (favorites first, then alphabetical)
 
+#### Settings Manager Tests (`SettingsManagerTests`)
+- ✅ Default measurement system initialization (Imperial)
+- ✅ Persistence across app launches with UserDefaults
+- ✅ Invalid data handling and fallback to defaults
+- ✅ Observable property publishing with @Published
+- ✅ Multiple measurement system updates
+
 #### Model Tests (`CocktailModelTests`)
 - ✅ JSON decoding with complete/partial data
 - ✅ Error handling for malformed JSON
 - ✅ Sendable conformance verification
 - ✅ Edge cases and data validation
 
+#### Detail View Tests (`CocktailDetailViewTests`)
+- ✅ Measurement system display integration
+- ✅ Dynamic ingredient amount switching (Imperial/Metric)
+- ✅ Empty amount handling for both measurement systems
+- ✅ Real-time measurement system preference updates
+
 ### Mock Infrastructure
 - **MockCocktailsAPI**: Actor-based API simulation with configurable success/failure
-- **MockUserDefaults**: In-memory storage for testing persistence
+- **MockUserDefaults**: In-memory storage for testing persistence and settings
 - **MockData**: Standardized test fixtures with Sendable conformance
+- **Test Cocktails**: Comprehensive test data with dual measurement amounts
 
 ---
 
@@ -281,6 +341,16 @@ User Tap → SwiftUI Action → CocktailDataManager Async Method → State Updat
 Filter Selection → FilterType Update → Computed Property → Automatic Filtering → UI Update
 ```
 
+### 5. Settings & Measurement System Flow
+```
+Settings Button → SettingsView Modal → Measurement Toggle → SettingsManager Update → UserDefaults Persistence → Detail View Refresh
+```
+
+### 6. Ingredient Display Flow
+```
+CocktailDetailView → SettingsManager.measurementSystem → Ingredient.displayString OR Ingredient.metricDisplayString → Dynamic UI Update
+```
+
 ---
 
 ## 🚀 Key Features Implemented
@@ -292,15 +362,21 @@ Filter Selection → FilterType Update → Computed Property → Automatic Filte
 - [x] Favorites system with persistence
 - [x] Loading states and error handling
 - [x] Responsive UI with proper text wrapping
+- [x] Settings screen with Apple-style UI design
+- [x] Measurement system toggle (Imperial/Metric)
+- [x] Persistent user preferences with UserDefaults
+- [x] Dynamic ingredient display based on measurement preference
 
 ### ✅ Technical Excellence
 - [x] Swift Concurrency with async/await programming
-- [x] Comprehensive unit test coverage (24 tests)
+- [x] Comprehensive unit test coverage (30+ tests including settings)
 - [x] Clean architecture with separation of concerns
 - [x] Dependency injection for testability
 - [x] Protocol-oriented design
 - [x] Proper error handling and user feedback
 - [x] Thread-safe design with @MainActor and Sendable types
+- [x] Observable state management for real-time UI updates
+- [x] UserDefaults abstraction for testable persistence
 
 ### ✅ Code Quality
 - [x] Consistent MARK comment organization
