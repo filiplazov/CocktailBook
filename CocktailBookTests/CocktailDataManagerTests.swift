@@ -107,7 +107,7 @@ final class CocktailDataManagerTests: XCTestCase {
     func testToggleFavorite() async throws {
         // Given
         await dataManager.loadData()
-        let cocktailID = dataManager.allCocktails.first!.id
+        let cocktailID = try XCTUnwrap(dataManager.allCocktails.first).id
         XCTAssertFalse(dataManager.isFavorite(cocktailID: cocktailID))
 
         // When adding to favorites
@@ -128,22 +128,21 @@ final class CocktailDataManagerTests: XCTestCase {
     func testFavoritesPersistedInUserDefaults() async throws {
         // Given
         await dataManager.loadData()
-        let cocktailID = dataManager.allCocktails.first!.id
+        let cocktailID = try XCTUnwrap(dataManager.allCocktails.first).id
 
         // When
         dataManager.toggleFavorite(cocktailID: cocktailID)
 
         // Then
-        let savedFavorites = mockUserDefaults.array(forKey: "FavoriteCocktailIDs") as? [String]
-        XCTAssertNotNil(savedFavorites)
-        XCTAssertTrue(savedFavorites!.contains(cocktailID))
+        let savedFavorites = try XCTUnwrap(mockUserDefaults.array(forKey: "FavoriteCocktailIDs") as? [String])
+        XCTAssertTrue(savedFavorites.contains(cocktailID))
     }
 
     func testFavoritesSortedFirst() async throws {
         // Given
         await dataManager.loadData()
-        let firstCocktail = dataManager.allCocktails.first!
-        let lastCocktail = dataManager.allCocktails.last!
+        let firstCocktail = try XCTUnwrap(dataManager.allCocktails.first)
+        let lastCocktail = try XCTUnwrap(dataManager.allCocktails.last)
 
         // When marking last cocktail as favorite
         dataManager.toggleFavorite(cocktailID: lastCocktail.id)
@@ -165,7 +164,7 @@ final class CocktailDataManagerTests: XCTestCase {
         // Then - favorites should be sorted alphabetically among themselves
         let favoriteCocktails = dataManager.filteredCocktails.filter { $0.isFavorite }
         XCTAssertEqual(favoriteCocktails.count, 2)
-        
+
         // Check that favorites come first
         let firstTwoItems = Array(dataManager.filteredCocktails.prefix(2))
         XCTAssertTrue(firstTwoItems.allSatisfy { $0.isFavorite })
@@ -176,8 +175,8 @@ final class CocktailDataManagerTests: XCTestCase {
     func testFavoritesWithFiltering() async throws {
         // Given
         await dataManager.loadData()
-        let alcoholicCocktail = dataManager.allCocktails.first { $0.type == .alcoholic }!
-        let nonAlcoholicCocktail = dataManager.allCocktails.first { $0.type == .nonAlcoholic }!
+        let alcoholicCocktail = try XCTUnwrap(dataManager.allCocktails.first { $0.type == .alcoholic })
+        let nonAlcoholicCocktail = try XCTUnwrap(dataManager.allCocktails.first { $0.type == .nonAlcoholic })
 
         // When marking both types as favorites
         dataManager.toggleFavorite(cocktailID: alcoholicCocktail.id)
@@ -227,61 +226,61 @@ final class CocktailDataManagerTests: XCTestCase {
         // Then
         XCTAssertTrue(newDataManager.favoriteCocktailIDs.isEmpty)
     }
-    
+
     // MARK: - Ingredient Display String Tests
-    
+
     func testIngredientDisplayString_WithImperialSystem_ReturnsImperialAmounts() {
         // Given
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
-        
+
         // When
         let displayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
-        
+
         // Then
         XCTAssertEqual(displayString, "2 oz Tequila")
     }
-    
+
     func testIngredientDisplayString_WithMetricSystem_ReturnsMetricAmounts() {
         // Given
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
-        
+
         // When
         let displayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
-        
+
         // Then
         XCTAssertEqual(displayString, "60 ml Tequila")
     }
-    
+
     func testIngredientDisplayString_WithEmptyAmounts_ReturnsIngredientNameOnly() {
         // Given
         let ingredient = Ingredient(imperialAmount: "", name: "Salt", metricAmount: "")
-        
+
         // When - Imperial system
         let imperialDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
-        
+
         // Then
         XCTAssertEqual(imperialDisplayString, "Salt")
-        
+
         // When - Metric system
         let metricDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
-        
+
         // Then
         XCTAssertEqual(metricDisplayString, "Salt")
     }
-    
+
     func testIngredientDisplayString_WithOnlyImperialAmount_ReturnsAppropriateDisplay() {
         // Given
         let ingredient = Ingredient(imperialAmount: "1 pinch", name: "Black pepper", metricAmount: "")
-        
+
         // When - Imperial system
         let imperialDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .imperial)
-        
+
         // Then
         XCTAssertEqual(imperialDisplayString, "1 pinch Black pepper")
-        
+
         // When - Metric system (should fallback to just name when metric is empty)
         let metricDisplayString = dataManager.ingredientDisplayString(for: ingredient, measurementSystem: .metric)
-        
+
         // Then
         XCTAssertEqual(metricDisplayString, "Black pepper")
     }

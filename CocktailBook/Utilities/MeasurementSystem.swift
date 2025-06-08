@@ -3,9 +3,9 @@ import Foundation
 // MARK: - Measurement System
 
 public enum MeasurementSystem: String, CaseIterable, Sendable {
-    case imperial = "imperial"
-    case metric = "metric"
-    
+    case imperial
+    case metric
+
     var displayName: String {
         switch self {
         case .imperial:
@@ -25,20 +25,20 @@ final class SettingsManager: ObservableObject {
             userDefaults.set(measurementSystem.rawValue, forKey: UserDefaultsKeys.measurementSystem)
         }
     }
-    
+
     private let userDefaults: UserDefaultsProtocol
-    
+
     // MARK: - User Defaults Keys
-    
+
     private enum UserDefaultsKeys {
         static let measurementSystem = "measurementSystem"
     }
-    
+
     // MARK: - Initialization
-    
+
     init(userDefaults: UserDefaultsProtocol = UserDefaults.standard) {
         self.userDefaults = userDefaults
-        
+
         // Load saved measurement system or default to imperial
         if let savedSystemString = userDefaults.object(forKey: UserDefaultsKeys.measurementSystem) as? String,
            let savedSystem = MeasurementSystem(rawValue: savedSystemString) {
@@ -47,4 +47,4 @@ final class SettingsManager: ObservableObject {
             self.measurementSystem = .imperial
         }
     }
-} 
+}

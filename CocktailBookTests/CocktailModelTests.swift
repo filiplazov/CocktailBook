@@ -7,7 +7,18 @@ class CocktailModelTests: XCTestCase {
     // MARK: - JSON Decoding Tests
 
     func testCocktailDecodingFromValidJSON() throws {
-        let jsonString = """
+        let jsonString = createValidMargaritaJSON()
+        let json = Data(jsonString.utf8)
+
+        let cocktail = try JSONDecoder().decode(Cocktail.self, from: json)
+
+        assertValidMargaritaProperties(cocktail)
+        assertValidMargaritaIngredients(cocktail)
+        XCTAssertFalse(cocktail.isFavorite) // Default value should be false
+    }
+
+    private func createValidMargaritaJSON() -> String {
+        """
         {
             "id": "test-id-123",
             "name": "Margarita",
@@ -40,10 +51,9 @@ class CocktailModelTests: XCTestCase {
             ]
         }
         """
-        let json = Data(jsonString.utf8)
+    }
 
-        let cocktail = try JSONDecoder().decode(Cocktail.self, from: json)
-
+    private func assertValidMargaritaProperties(_ cocktail: Cocktail) {
         XCTAssertEqual(cocktail.id, "test-id-123")
         XCTAssertEqual(cocktail.name, "Margarita")
         XCTAssertEqual(cocktail.type, .alcoholic)
@@ -54,12 +64,14 @@ class CocktailModelTests: XCTestCase {
         )
         XCTAssertEqual(cocktail.preparationMinutes, 5)
         XCTAssertEqual(cocktail.imageName, "margarita_image")
+    }
+
+    private func assertValidMargaritaIngredients(_ cocktail: Cocktail) {
         XCTAssertEqual(cocktail.ingredients.count, 4)
         XCTAssertEqual(cocktail.ingredients[0].displayString, "2 oz Tequila")
         XCTAssertEqual(cocktail.ingredients[1].displayString, "1 oz Triple sec")
         XCTAssertEqual(cocktail.ingredients[2].displayString, "1 oz Lime juice")
         XCTAssertEqual(cocktail.ingredients[3].displayString, "Salt")
-        XCTAssertFalse(cocktail.isFavorite) // Default value should be false
     }
 
     func testCocktailDecodingFromMinimalJSON() throws {

@@ -158,4 +158,4 @@ final class MeasurementSystemTests: XCTestCase {
         XCTAssertEqual(MeasurementSystem(rawValue: "metric"), .metric)
         XCTAssertNil(MeasurementSystem(rawValue: "invalid"))
     }
-} 
+}

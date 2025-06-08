@@ -23,7 +23,6 @@ opt_in_rules:
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
-  - conditional_returns_on_newline
   - contains_over_filter_count
   - contains_over_filter_is_empty
   - contains_over_first_not_nil
@@ -156,6 +155,9 @@ type_name:
 #                     \/
 #                     \/\/  Created by .* on .*\.
 #                     \/\/
+
+# Custom configurations for different file types
+custom_rules: {}
 
 # Reporter type (xcode for Xcode integration)
 reporter: "xcode" 

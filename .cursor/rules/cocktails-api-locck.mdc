@@ -3,4 +3,5 @@ description:
 globs: 
 alwaysApply: false
 ---
-You are not alloweed to alter contents in the CocktailsAPI folder
+Always check and fix lint errors.
+When writing texts and code makre sure that guidelines in the architecture.md are followed

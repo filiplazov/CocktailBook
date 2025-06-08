@@ -1,20 +1,20 @@
-import SwiftUI
 import CocktailsKit
+import SwiftUI
 
 struct CocktailDetailView: View {
     let cocktail: Cocktail
     let dataManager: CocktailDataManager
     let settingsManager: SettingsManager
-    
+
     @State private var isFavorite: Bool
-    
+
     init(cocktail: Cocktail, dataManager: CocktailDataManager, settingsManager: SettingsManager) {
         self.cocktail = cocktail
         self.dataManager = dataManager
         self.settingsManager = settingsManager
         self._isFavorite = State(initialValue: cocktail.isFavorite)
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -24,7 +24,7 @@ struct CocktailDetailView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(maxHeight: 250)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-                
+
                 // Preparation Time
                 HStack {
                     Image(systemName: "clock")
@@ -34,7 +34,7 @@ struct CocktailDetailView: View {
                         .foregroundColor(.secondary)
                     Spacer()
                 }
-                
+
                 // Long Description
                 Text(cocktail.longDescription)
                     .font(.body)
@@ -42,19 +42,22 @@ struct CocktailDetailView: View {
                     .multilineTextAlignment(.leading)
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
-                
+
                 // Ingredients
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Ingredients")
                         .font(.headline)
                         .foregroundColor(.primary)
-                    
+
                     ForEach(cocktail.ingredients, id: \.id) { ingredient in
                         HStack {
                             Image(systemName: "circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.orange)
-                            Text(dataManager.ingredientDisplayString(for: ingredient, measurementSystem: settingsManager.measurementSystem))
+                            Text(dataManager.ingredientDisplayString(
+                                for: ingredient,
+                                measurementSystem: settingsManager.measurementSystem
+                            ))
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .multilineTextAlignment(.leading)
@@ -86,8 +89,6 @@ struct CocktailDetailView: View {
             isFavorite = dataManager.isFavorite(cocktailID: cocktail.id)
         }
     }
-    
-
 }
 
 #Preview {
