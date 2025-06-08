@@ -1,6 +1,8 @@
 @testable import CocktailBook
 import XCTest
 
+import CocktailsKit
+
 class CocktailModelTests: XCTestCase {
     // MARK: - JSON Decoding Tests
 
@@ -14,7 +16,28 @@ class CocktailModelTests: XCTestCase {
             "longDescription": "The Margarita is a cocktail consisting of tequila, orange liqueur, and lime juice.",
             "preparationMinutes": 5,
             "imageName": "margarita_image",
-            "ingredients": ["Tequila", "Triple sec", "Lime juice", "Salt"]
+            "ingredients": [
+                {
+                    "amount": "2 oz",
+                    "name": "Tequila",
+                    "metricAmount": "60 ml"
+                },
+                {
+                    "amount": "1 oz",
+                    "name": "Triple sec",
+                    "metricAmount": "30 ml"
+                },
+                {
+                    "amount": "1 oz",
+                    "name": "Lime juice",
+                    "metricAmount": "30 ml"
+                },
+                {
+                    "amount": "",
+                    "name": "Salt",
+                    "metricAmount": ""
+                }
+            ]
         }
         """
         let json = Data(jsonString.utf8)
@@ -31,7 +54,11 @@ class CocktailModelTests: XCTestCase {
         )
         XCTAssertEqual(cocktail.preparationMinutes, 5)
         XCTAssertEqual(cocktail.imageName, "margarita_image")
-        XCTAssertEqual(cocktail.ingredients, ["Tequila", "Triple sec", "Lime juice", "Salt"])
+        XCTAssertEqual(cocktail.ingredients.count, 4)
+        XCTAssertEqual(cocktail.ingredients[0].displayString, "2 oz Tequila")
+        XCTAssertEqual(cocktail.ingredients[1].displayString, "1 oz Triple sec")
+        XCTAssertEqual(cocktail.ingredients[2].displayString, "1 oz Lime juice")
+        XCTAssertEqual(cocktail.ingredients[3].displayString, "Salt")
         XCTAssertFalse(cocktail.isFavorite) // Default value should be false
     }
 
@@ -45,7 +72,13 @@ class CocktailModelTests: XCTestCase {
             "longDescription": "Just a simple non-alcoholic drink",
             "preparationMinutes": 1,
             "imageName": "simple",
-            "ingredients": ["Water"]
+            "ingredients": [
+                {
+                    "amount": "1 cup",
+                    "name": "Water",
+                    "metricAmount": "240 ml"
+                }
+            ]
         }
         """
         let json = Data(jsonString.utf8)
@@ -54,7 +87,7 @@ class CocktailModelTests: XCTestCase {
 
         XCTAssertEqual(cocktail.type, .nonAlcoholic)
         XCTAssertEqual(cocktail.ingredients.count, 1)
-        XCTAssertEqual(cocktail.ingredients.first, "Water")
+        XCTAssertEqual(cocktail.ingredients.first?.displayString, "1 cup Water")
         XCTAssertFalse(cocktail.isFavorite)
     }
 
@@ -68,7 +101,13 @@ class CocktailModelTests: XCTestCase {
             "longDescription": "This should fail to decode",
             "preparationMinutes": 1,
             "imageName": "invalid",
-            "ingredients": ["Nothing"]
+            "ingredients": [
+                {
+                    "amount": "",
+                    "name": "Nothing",
+                    "metricAmount": ""
+                }
+            ]
         }
         """
         let json = Data(jsonString.utf8)
@@ -103,7 +142,10 @@ class CocktailModelTests: XCTestCase {
             longDescription: "This is a test cocktail for encoding",
             preparationMinutes: 10,
             imageName: "test_image",
-            ingredients: ["Test Ingredient 1", "Test Ingredient 2"]
+            ingredients: [
+                Ingredient(imperialAmount: "1 oz", name: "Test Ingredient 1", metricAmount: "30 ml"),
+                Ingredient(imperialAmount: "2 oz", name: "Test Ingredient 2", metricAmount: "60 ml")
+            ]
         )
 
         // Set isFavorite to true - this should NOT be encoded
@@ -119,7 +161,10 @@ class CocktailModelTests: XCTestCase {
         XCTAssertEqual(decoded.longDescription, cocktail.longDescription)
         XCTAssertEqual(decoded.preparationMinutes, cocktail.preparationMinutes)
         XCTAssertEqual(decoded.imageName, cocktail.imageName)
-        XCTAssertEqual(decoded.ingredients, cocktail.ingredients)
+        XCTAssertEqual(decoded.ingredients.count, cocktail.ingredients.count)
+        for (index, ingredient) in decoded.ingredients.enumerated() {
+            XCTAssertEqual(ingredient.displayString, cocktail.ingredients[index].displayString)
+        }
 
         // isFavorite should be false (default) in decoded version, not the true we set
         XCTAssertFalse(decoded.isFavorite)
@@ -175,7 +220,11 @@ class CocktailModelTests: XCTestCase {
             longDescription: "Testing cocktail creation",
             preparationMinutes: 15,
             imageName: "creation_test",
-            ingredients: ["Ingredient A", "Ingredient B", "Ingredient C"]
+            ingredients: [
+                Ingredient(imperialAmount: "1 oz", name: "Ingredient A", metricAmount: "30 ml"),
+                Ingredient(imperialAmount: "2 oz", name: "Ingredient B", metricAmount: "60 ml"),
+                Ingredient(imperialAmount: "3 oz", name: "Ingredient C", metricAmount: "90 ml")
+            ]
         )
 
         XCTAssertEqual(cocktail.id, "creation-test")
@@ -198,7 +247,9 @@ class CocktailModelTests: XCTestCase {
             longDescription: "Test",
             preparationMinutes: 1,
             imageName: "test",
-            ingredients: ["Test"]
+            ingredients: [
+                Ingredient(imperialAmount: "1", name: "Test", metricAmount: "1")
+            ]
         )
 
         // Test that it conforms to Identifiable
@@ -217,7 +268,23 @@ class CocktailModelTests: XCTestCase {
             "longDescription": "This is a performance test for cocktail decoding",
             "preparationMinutes": 5,
             "imageName": "performance_test",
-            "ingredients": ["Ingredient 1", "Ingredient 2", "Ingredient 3"]
+            "ingredients": [
+                {
+                    "amount": "1 oz",
+                    "name": "Ingredient 1",
+                    "metricAmount": "30 ml"
+                },
+                {
+                    "amount": "2 oz",
+                    "name": "Ingredient 2",
+                    "metricAmount": "60 ml"
+                },
+                {
+                    "amount": "3 oz",
+                    "name": "Ingredient 3",
+                    "metricAmount": "90 ml"
+                }
+            ]
         }
         """
         let json = Data(jsonString.utf8)

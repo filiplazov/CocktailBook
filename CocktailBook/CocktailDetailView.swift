@@ -52,12 +52,12 @@ struct CocktailDetailView: View {
                         .font(.headline)
                         .foregroundColor(.primary)
 
-                    ForEach(cocktail.ingredients.indices, id: \.self) { index in
+                    ForEach(cocktail.ingredients, id: \.id) { ingredient in
                         HStack {
                             Image(systemName: "circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.orange)
-                            Text(cocktail.ingredients[index])
+                            Text(ingredient.displayString)
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .multilineTextAlignment(.leading)
@@ -105,7 +105,12 @@ struct CocktailDetailView: View {
                 "and lime juice often served with salt on the rim.",
             preparationMinutes: 5,
             imageName: "margarita_image",
-            ingredients: ["Tequila", "Triple sec", "Lime juice", "Salt"]
+            ingredients: [
+                Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml"),
+                Ingredient(imperialAmount: "1 oz", name: "Triple sec", metricAmount: "30 ml"),
+                Ingredient(imperialAmount: "1 oz", name: "Lime juice", metricAmount: "30 ml"),
+                Ingredient(imperialAmount: "", name: "Salt", metricAmount: "")
+            ]
         ),
         dataManager: CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())
     )

@@ -1,5 +1,7 @@
 import Foundation
 
+import CocktailsKit
+
 struct Cocktail: Identifiable {
     let id: String
     let name: String
@@ -8,7 +10,7 @@ struct Cocktail: Identifiable {
     let longDescription: String
     let preparationMinutes: Int
     let imageName: String
-    let ingredients: [String]
+    let ingredients: [Ingredient]
 
     var isFavorite: Bool = false
 
@@ -28,7 +30,7 @@ extension Cocktail: Codable {
         longDescription = try container.decode(String.self, forKey: .longDescription)
         preparationMinutes = try container.decode(Int.self, forKey: .preparationMinutes)
         imageName = try container.decode(String.self, forKey: .imageName)
-        ingredients = try container.decode([String].self, forKey: .ingredients)
+        ingredients = try container.decode([Ingredient].self, forKey: .ingredients)
         isFavorite = false // Default value
     }
 
