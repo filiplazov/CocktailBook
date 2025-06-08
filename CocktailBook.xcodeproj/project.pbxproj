@@ -96,6 +96,7 @@
 			buildConfigurationList = E8324EA0262076EE00FD2124 /* Build configuration list for PBXNativeTarget "CocktailBook" */;
 			buildPhases = (
 				E8324E72262076EB00FD2124 /* Sources */,
+				42E411D69F4A490A8A8A8B8C003273F2 /* SwiftLint */,
 				E8324E73262076EB00FD2124 /* Frameworks */,
 				E8324E74262076EB00FD2124 /* Resources */,
 			);
@@ -203,6 +204,28 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42E411D69F4A490A8A8A8B8C003273F2 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.swiftlint.yml",
+				"$(SRCROOT)/CocktailBook",
+				"$(SRCROOT)/CocktailBookTests",
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# SwiftLint Integration for Xcode\nif [ \"${CONFIGURATION}\" = \"Release\" ]; then\n    echo \"Skipping SwiftLint for Release build\"\n    exit 0\nfi\n\nif which swiftlint >/dev/null; then\n    echo \"Running SwiftLint...\"\n    swiftlint lint --reporter xcode\nelse\n    echo \"warning: SwiftLint not installed. Install with: brew install swiftlint\"\nfi\n";
 		};
 		E8324E88262076EE00FD2124 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;

@@ -9,9 +9,9 @@ struct Cocktail: Identifiable {
     let preparationMinutes: Int
     let imageName: String
     let ingredients: [String]
-    
+
     var isFavorite: Bool = false
-    
+
     // Custom coding keys to exclude isFavorite from JSON
     private enum CodingKeys: String, CodingKey {
         case id, name, type, shortDescription, longDescription, preparationMinutes, imageName, ingredients
@@ -31,7 +31,7 @@ extension Cocktail: Codable {
         ingredients = try container.decode([String].self, forKey: .ingredients)
         isFavorite = false // Default value
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -49,7 +49,7 @@ extension Cocktail: Codable {
 enum CocktailType: String, Codable, CaseIterable {
     case alcoholic = "alcoholic"
     case nonAlcoholic = "non-alcoholic"
-    
+
     var displayName: String {
         switch self {
         case .alcoholic:
@@ -64,7 +64,7 @@ enum FilterType: CaseIterable {
     case all
     case alcoholic
     case nonAlcoholic
-    
+
     var title: String {
         switch self {
         case .all:
@@ -75,4 +75,4 @@ enum FilterType: CaseIterable {
             return "Non-Alcoholic Cocktails"
         }
     }
-} 
+}

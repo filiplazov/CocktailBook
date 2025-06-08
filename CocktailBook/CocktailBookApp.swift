@@ -7,4 +7,4 @@ struct CocktailBookApp: App {
             CocktailListView()
         }
     }
-} 
+}

@@ -1,5 +1,5 @@
-import Foundation
 @testable import CocktailBook
+import Foundation
 
 struct MockData {
     static let mockMargarita = Cocktail(
@@ -13,7 +13,7 @@ struct MockData {
         ingredients: ["Tequila", "Lime juice", "Triple sec"],
         isFavorite: false
     )
-    
+
     static let mockMojito = Cocktail(
         id: "2",
         name: "Mock Mojito",
@@ -25,7 +25,7 @@ struct MockData {
         ingredients: ["White rum", "Lime juice", "Mint", "Soda water"],
         isFavorite: false
     )
-    
+
     static let mockManhattan = Cocktail(
         id: "3",
         name: "Mock Manhattan",
@@ -37,4 +37,4 @@ struct MockData {
         ingredients: ["Whiskey", "Sweet vermouth", "Bitters"],
         isFavorite: false
     )
-} 
+}

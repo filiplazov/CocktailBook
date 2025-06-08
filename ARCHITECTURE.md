@@ -38,6 +38,11 @@
 - **Xcode**: 16.4.0
 - **Testing Framework**: XCTest
 - **Code Organization**: MARK comments for section organization
+- **SwiftLint**: v0.59.1 for automated code style enforcement
+  - Configuration: `.swiftlint.yml` with project-specific rules
+  - Shell script: `scripts/swiftlint.sh` for easy CLI usage
+  - Auto-correction support for formatting violations
+  - Integration ready for Xcode build phases
 
 ---
 
@@ -198,6 +203,7 @@ All source files use consistent MARK comments for organization:
 - **Single Responsibility**: Each class/struct has a focused purpose
 - **Immutable by Default**: Struct-based models with controlled mutability
 - **Error Handling**: Comprehensive error types and user-friendly messages
+- **SwiftLint Integration**: Automated code style enforcement with custom configuration
 
 ---
 

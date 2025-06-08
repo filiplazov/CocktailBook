@@ -6,4 +6,4 @@ protocol UserDefaultsProtocol {
     func removeObject(forKey defaultName: String)
 }
 
-extension UserDefaults: UserDefaultsProtocol {} 
+extension UserDefaults: UserDefaultsProtocol {}
