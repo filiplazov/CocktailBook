@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Ingredient: Codable, Hashable, Identifiable {
+public struct Ingredient: Codable, Hashable, Identifiable, Sendable {
     public let id = UUID()
     public let imperialAmount: String
     public let name: String

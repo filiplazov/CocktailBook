@@ -1,6 +1,6 @@
 import Foundation
 
-public enum CocktailsAPIError: Error, LocalizedError {
+public enum CocktailsAPIError: Error, LocalizedError, Sendable {
     case unavailable
     
     public var errorDescription: String? {

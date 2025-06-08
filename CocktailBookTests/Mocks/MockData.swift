@@ -23,13 +23,12 @@ struct MockData {
     static let mockMojito = Cocktail(
         id: "2",
         name: "Mock Mojito",
-        type: .alcoholic,
-        shortDescription: "A refreshing rum cocktail",
-        longDescription: "A Cuban cocktail made with white rum, lime juice, mint, and soda water.",
+        type: .nonAlcoholic,
+        shortDescription: "A refreshing mocktail",
+        longDescription: "A refreshing non-alcoholic drink with lime juice, mint, and soda water.",
         preparationMinutes: 7,
         imageName: "https://example.com/mojito.jpg",
         ingredients: [
-            Ingredient(imperialAmount: "2 oz", name: "White rum", metricAmount: "60 ml"),
             Ingredient(imperialAmount: "1 oz", name: "Lime juice", metricAmount: "30 ml"),
             Ingredient(imperialAmount: "10", name: "Mint", metricAmount: "10"),
             Ingredient(imperialAmount: "4 oz", name: "Soda water", metricAmount: "120 ml")

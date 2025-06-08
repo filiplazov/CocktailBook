@@ -1,14 +1,9 @@
-import Combine
 import SwiftUI
-
 import CocktailsKit
 
 struct CocktailListView: View {
-    @StateObject private var dataManager: CocktailDataManager
-    init(dataManager: CocktailDataManager = CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())) {
-        self._dataManager = StateObject(wrappedValue: dataManager)
-    }
-
+    @ObservedObject var dataManager: CocktailDataManager
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -20,7 +15,7 @@ struct CocktailListView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
-
+                
                 // Content
                 if dataManager.isLoading {
                     Spacer()
@@ -33,18 +28,20 @@ struct CocktailListView: View {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.system(size: 64))
                             .foregroundColor(.orange)
-
+                        
                         Text("Failed to load cocktails")
                             .font(.headline)
-
+                        
                         Text(errorMessage)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-
+                        
                         Button("Retry") {
-                            dataManager.loadData()
+                            Task {
+                                await dataManager.loadData()
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                     }
@@ -56,10 +53,11 @@ struct CocktailListView: View {
                             dataManager: dataManager
                         )) {
                             CocktailRowView(
-                                cocktail: cocktail
-                            ) { cocktailID in
-                                dataManager.toggleFavorite(cocktailID: cocktailID)
-                            }
+                                cocktail: cocktail,
+                                onToggleFavorite: { cocktailID in
+                                    dataManager.toggleFavorite(cocktailID: cocktailID)
+                                }
+                            )
                         }
                     }
                     .listStyle(PlainListStyle())
@@ -68,13 +66,13 @@ struct CocktailListView: View {
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.large)
         }
-        .onAppear {
+        .task {
             if dataManager.allCocktails.isEmpty && !dataManager.isLoading && dataManager.errorMessage == nil {
-                dataManager.loadData()
+                await dataManager.loadData()
             }
         }
     }
-
+    
     private var navigationTitle: String {
         switch dataManager.filterType {
         case .all:
@@ -90,7 +88,7 @@ struct CocktailListView: View {
 struct CocktailRowView: View {
     let cocktail: Cocktail
     let onToggleFavorite: (String) -> Void
-
+    
     var body: some View {
         HStack {
             // Cocktail Image (using bundle images)
@@ -103,21 +101,21 @@ struct CocktailRowView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.3))
                 )
-
+            
             // Cocktail Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(cocktail.name)
                     .font(.headline)
                     .foregroundColor(cocktail.isFavorite ? .red : .primary)
-
+                
                 Text(cocktail.shortDescription)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
             }
-
+            
             Spacer()
-
+            
             // Favorite Button (only show if favorite)
             if cocktail.isFavorite {
                 Image(systemName: "heart.fill")
@@ -131,5 +129,14 @@ struct CocktailRowView: View {
 }
 
 #Preview {
-    CocktailListView()
+    @MainActor
+    struct PreviewWrapper: View {
+        @StateObject private var dataManager = CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())
+        
+        var body: some View {
+            CocktailListView(dataManager: dataManager)
+        }
+    }
+    
+    return PreviewWrapper()
 }

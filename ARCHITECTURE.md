@@ -2,21 +2,22 @@
 
 ## 📱 Project Overview
 
-**CocktailBook** is a modern iOS application built with SwiftUI and Combine, showcasing a clean architecture approach for displaying and managing cocktail recipes. The app demonstrates best practices in iOS development including reactive programming, dependency injection, comprehensive testing, and clean code organization.
+**CocktailBook** is a modern iOS application built with SwiftUI and Swift Concurrency, showcasing a clean architecture approach for displaying and managing cocktail recipes. The app demonstrates best practices in iOS development including async/await programming, dependency injection, comprehensive testing, and clean code organization.
 
 ## 🏗 Architecture Pattern
 
-### MVVM + Combine (Model-View-ViewModel)
+### MVVM + Swift Concurrency (Model-View-ViewModel)
 - **View Layer**: SwiftUI views (`CocktailListView`, `CocktailDetailView`)
-- **ViewModel Layer**: `CocktailDataManager` (ObservableObject)
-- **Model Layer**: `Cocktail` struct and related data models
-- **Reactive Binding**: Combine framework for data flow and state management
+- **ViewModel Layer**: `CocktailDataManager` (@MainActor ObservableObject)
+- **Model Layer**: `Cocktail` struct and related data models (Sendable conforming)
+- **Async Programming**: Swift Concurrency with async/await for data flow and state management
 
 ### Key Architectural Principles
 - **Separation of Concerns**: Clear boundaries between UI, business logic, and data
 - **Dependency Injection**: Constructor injection for testability
 - **Single Responsibility**: Each class/struct has a focused purpose
 - **Protocol-Oriented Programming**: `CocktailsAPI`, `UserDefaultsProtocol`
+- **Thread Safety**: @MainActor for UI updates, Sendable types, and actor isolation
 
 ---
 
@@ -26,17 +27,19 @@
 - **Language**: Swift 6.0
 - **Minimum iOS Version**: iOS 18.0
 - **UI Framework**: SwiftUI
-- **Reactive Framework**: Combine
+- **Concurrency Framework**: Swift Concurrency (async/await)
 - **Package Manager**: Swift Package Manager (SPM)
 
 ### Dependencies
-- **CombineSchedulers** (v1.0.3): Testable schedulers for Combine publishers
-  - Enables deterministic testing of asynchronous operations
-  - Provides `TestSchedulerOf<DispatchQueue>` for controlled time advancement
+- **CocktailsKit** (Local Swift Package): Core API layer and data abstractions
+  - Contains `CocktailsAPI` protocol and `CocktailsAPIError` definitions
+  - Includes `FakeCocktailsAPI` actor for development and testing
+  - Provides sample cocktail data (JSON) for realistic testing
+  - Thread-safe actor-based implementation with Swift Concurrency
 
 ### Development Tools
 - **Xcode**: 16.4.0
-- **Testing Framework**: XCTest
+- **Testing Framework**: XCTest with async/await support
 - **Code Organization**: MARK comments for section organization
 - **SwiftLint**: v0.59.1 for automated code style enforcement
   - Configuration: `.swiftlint.yml` with project-specific rules
@@ -75,23 +78,60 @@ CocktailBookTests/
     ├── MockUserDefaults.swift
     └── MockData.swift
 
-External/
-├── 🌐 API Package
-│   └── CocktailsAPI/
-└── 📝 Documentation
-    ├── README.md
-    └── ARCHITECTURE.md (this file)
+CocktailsKit/ (Swift Package)
+├── 📦 Package.swift
+├── 🌐 Sources/CocktailsKit/
+│   ├── CocktailsAPI.swift (Protocol)
+│   ├── CocktailsAPIError.swift (Error Types)
+│   └── FakeCocktailsAPI.swift (Actor Implementation)
+└── 📊 Resources/
+    └── sample.json (Test Data)
+
+Documentation/
+├── 📝 README.md
+└── 📋 ARCHITECTURE.md (this file)
 ```
 
 ---
 
 ## 🏛 Core Components
 
-### 1. CocktailDataManager (ViewModel)
-**Purpose**: Central business logic controller implementing the ViewModel pattern
+### 1. CocktailsKit Swift Package (API Layer)
+**Purpose**: Modular API abstraction layer providing network protocols and implementations
+
+**Key Components**:
+- **CocktailsAPI Protocol**: Defines async API contract for fetching cocktail data
+- **CocktailsAPIError**: Sendable error types for API failures (`unavailable`)
+- **FakeCocktailsAPI Actor**: Thread-safe mock implementation for development/testing
+- **sample.json**: Realistic test data with complete cocktail information
+
+**Architecture Benefits**:
+```swift
+// Protocol-based abstraction
+protocol CocktailsAPI: Sendable {
+    func fetchCocktails() async throws -> Data
+}
+
+// Actor-based implementation
+actor FakeCocktailsAPI: CocktailsAPI {
+    // Thread-safe failure simulation
+    // On-demand JSON loading
+    // Immutable configuration
+}
+```
+
+**Key Features**:
+- Swift Concurrency with actor isolation for thread safety
+- On-demand JSON data loading (no stored properties)
+- Configurable failure simulation for testing edge cases
+- Clean separation from main app logic
+- Reusable across different targets (app, tests, previews)
+
+### 2. CocktailDataManager (ViewModel)
+**Purpose**: Central business logic controller implementing the ViewModel pattern with @MainActor
 
 **Key Responsibilities**:
-- Data loading and caching
+- Data loading and caching with async/await
 - State management (`@Published` properties)
 - Filtering and sorting logic
 - Favorites management with UserDefaults persistence
@@ -99,20 +139,29 @@ External/
 
 **Key Features**:
 ```swift
-// MARK: - Published Properties
-@Published var isLoading: Bool = false
-@Published var errorMessage: String?
-@Published var allCocktails: [Cocktail] = []
-@Published var filteredCocktails: [Cocktail] = []
-@Published var filterType: FilterType = .all
+@MainActor
+final class CocktailDataManager: ObservableObject {
+    // MARK: - Published Properties
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
+    @Published var allCocktails: [Cocktail] = []
+    @Published var filteredCocktails: [Cocktail] = []
+    @Published var filterType: FilterType = .all
+    
+    // MARK: - Async Methods
+    func loadData() async {
+        // Swift Concurrency implementation
+    }
+}
 ```
 
-**Reactive Data Flow**:
-- Uses `Publishers.CombineLatest` to automatically filter cocktails when data or filter changes
+**Async Data Flow**:
+- Uses `Task` blocks for async operations
 - Implements dependency injection for testability
-- Scheduler abstraction for deterministic testing
+- @MainActor ensures UI updates happen on main thread
+- Sendable conformance for thread-safe data models
 
-### 2. SwiftUI Views
+### 3. SwiftUI Views
 
 #### CocktailListView
 - **Purpose**: Main screen displaying filtered cocktail list
@@ -124,7 +173,7 @@ External/
 - **Features**: Image display, ingredients list, preparation time, favorite toggle
 - **Layout**: ScrollView with proper text wrapping and responsive design
 
-### 3. Data Models
+### 4. Data Models
 
 #### Cocktail
 - **Type**: `Codable` struct for JSON parsing
@@ -149,29 +198,31 @@ func testCocktailDecoding_WithValidJSON_ReturnsExpectedCocktail()
 ```
 
 ### Test Architecture
-- **Comprehensive Coverage**: 28 unit tests covering all major functionality
+- **Comprehensive Coverage**: 24 unit tests covering all major functionality
 - **Mock Objects**: Dedicated mock implementations for external dependencies
-- **Deterministic Testing**: `TestSchedulerOf<DispatchQueue>` for predictable async testing
+- **Async Testing**: Native async/await testing with Swift Concurrency
 - **Isolated Testing**: Each test uses fresh mock instances
+- **Actor-based Mocks**: Thread-safe mock implementations using actors
 
 ### Test Categories
 
 #### Data Manager Tests (`CocktailDataManagerTests`)
-- ✅ Data loading success/failure scenarios
+- ✅ Data loading success/failure scenarios with async/await
 - ✅ Favorites management (add/remove/check)
-- ✅ Loading state verification
+- ✅ Loading state verification with @MainActor
 - ✅ Filtering by type (all/alcoholic/non-alcoholic)
 - ✅ Sorting logic (favorites first, then alphabetical)
 
 #### Model Tests (`CocktailModelTests`)
 - ✅ JSON decoding with complete/partial data
 - ✅ Error handling for malformed JSON
+- ✅ Sendable conformance verification
 - ✅ Edge cases and data validation
 
 ### Mock Infrastructure
-- **MockCocktailsAPI**: Simulates API responses with configurable success/failure
+- **MockCocktailsAPI**: Actor-based API simulation with configurable success/failure
 - **MockUserDefaults**: In-memory storage for testing persistence
-- **MockData**: Standardized test fixtures
+- **MockData**: Standardized test fixtures with Sendable conformance
 
 ---
 
@@ -187,6 +238,7 @@ All source files use consistent MARK comments for organization:
 // MARK: - Initialization
 // MARK: - Public Methods
 // MARK: - Private Methods
+// MARK: - Async Methods (for Swift Concurrency methods)
 ```
 
 ### File Naming Conventions
@@ -211,22 +263,22 @@ All source files use consistent MARK comments for organization:
 
 ### 1. App Launch
 ```
-CocktailBookApp → CocktailListView → CocktailDataManager.loadData()
+CocktailBookApp → CocktailListView → CocktailDataManager.loadData() async
 ```
 
-### 2. Data Loading Flow
+### 2. Async Data Loading Flow
 ```
-CocktailDataManager → CocktailsAPI → JSON Response → Cocktail Models → @Published Properties → SwiftUI Update
+CocktailDataManager → CocktailsKit.CocktailsAPI (actor) → JSON Response → Sendable Cocktail Models → @Published Properties → SwiftUI Update
 ```
 
 ### 3. User Interaction Flow
 ```
-User Tap → SwiftUI Action → CocktailDataManager Method → State Update → UI Refresh
+User Tap → SwiftUI Action → CocktailDataManager Async Method → State Update → UI Refresh
 ```
 
 ### 4. Filtering System
 ```
-Filter Selection → FilterType Update → Combine Publisher → Automatic Filtering → UI Update
+Filter Selection → FilterType Update → Computed Property → Automatic Filtering → UI Update
 ```
 
 ---
@@ -242,19 +294,21 @@ Filter Selection → FilterType Update → Combine Publisher → Automatic Filte
 - [x] Responsive UI with proper text wrapping
 
 ### ✅ Technical Excellence
-- [x] Reactive programming with Combine
-- [x] Comprehensive unit test coverage (28 tests)
+- [x] Swift Concurrency with async/await programming
+- [x] Comprehensive unit test coverage (24 tests)
 - [x] Clean architecture with separation of concerns
 - [x] Dependency injection for testability
 - [x] Protocol-oriented design
 - [x] Proper error handling and user feedback
+- [x] Thread-safe design with @MainActor and Sendable types
 
 ### ✅ Code Quality
 - [x] Consistent MARK comment organization
 - [x] Descriptive test naming convention
 - [x] Modular file structure
-- [x] Mock-based testing infrastructure
+- [x] Actor-based testing infrastructure
 - [x] SwiftUI best practices
+- [x] Swift 6.0 strict concurrency compliance
 
 ---
 
@@ -264,17 +318,17 @@ Filter Selection → FilterType Update → Combine Publisher → Automatic Filte
 - **Coordinator Pattern**: Navigation management
 - **Repository Pattern**: Data layer abstraction
 - **UseCase/Interactor Layer**: Complex business logic separation
-- **State Management**: Consider Redux-like patterns for complex state
+- **Advanced Concurrency**: TaskGroup for parallel operations
 
 ### Technical Enhancements
 - **Core Data Integration**: Local persistence and offline capability
-- **Network Layer**: URLSession-based API client
-- **Image Caching**: Efficient image loading and caching
+- **Network Layer**: URLSession-based API client with async/await
+- **Image Caching**: Efficient image loading and caching with async/await
 - **Localization**: Multi-language support
 - **Accessibility**: VoiceOver and accessibility improvements
 
 ### Testing Enhancements
-- **UI Testing**: XCUITest integration
+- **UI Testing**: XCUITest integration with async/await
 - **Snapshot Testing**: Visual regression testing
 - **Performance Testing**: XCTMetric-based performance validation
 - **Integration Testing**: End-to-end workflow testing
@@ -285,13 +339,23 @@ Filter Selection → FilterType Update → Combine Publisher → Automatic Filte
 
 ### When Adding New Features
 1. **Follow MVVM Pattern**: Separate UI, business logic, and data concerns
-2. **Write Tests First**: TDD approach with descriptive test names
-3. **Use MARK Comments**: Organize code sections consistently
-4. **Implement Protocols**: Abstract external dependencies
-5. **Inject Dependencies**: Constructor injection for testability
+2. **Use Swift Concurrency**: Implement async/await for all asynchronous operations
+3. **Write Tests First**: TDD approach with descriptive test names
+4. **Use MARK Comments**: Organize code sections consistently
+5. **Implement Protocols**: Abstract external dependencies
+6. **Inject Dependencies**: Constructor injection for testability
+7. **Ensure Thread Safety**: Use @MainActor for UI updates, Sendable for data models
+
+### Swift Concurrency Guidelines
+- Use `@MainActor` for UI-related classes and methods
+- Make data models `Sendable` for thread safety
+- Prefer `async/await` over completion handlers
+- Use actors for shared mutable state
+- Use `Task` for bridging sync and async contexts
 
 ### Testing Standards
 - Write test names that describe scenario and expected outcome
+- Use async/await in test methods where appropriate
 - Use fresh mock instances for each test
 - Test both success and failure scenarios
 - Verify state changes and side effects
@@ -301,11 +365,13 @@ Filter Selection → FilterType Update → Combine Publisher → Automatic Filte
 - [ ] MARK comments properly organized
 - [ ] Dependencies injected via constructor
 - [ ] Tests written with descriptive names
+- [ ] Swift Concurrency patterns correctly implemented
 - [ ] Error handling implemented
 - [ ] SwiftUI best practices followed
-- [ ] Performance considerations addressed
+- [ ] Thread safety considerations addressed
+- [ ] Sendable conformance where appropriate
 
 ---
 
 *Last Updated: June 2025*
-*Architecture Document Version: 1.0* 
+*Current Architecture: Swift Concurrency + SwiftUI* 

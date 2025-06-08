@@ -1,23 +1,27 @@
-import Combine
-import CombineSchedulers
 import Foundation
-
 import CocktailsKit
 
-class CocktailDataManager: ObservableObject {
+@MainActor
+final class CocktailDataManager: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    @Published var allCocktails: [Cocktail] = []
+    @Published var allCocktails: [Cocktail] = [] {
+        didSet {
+            updateFilteredCocktails()
+        }
+    }
     @Published var filteredCocktails: [Cocktail] = []
-    @Published var filterType: FilterType = .all
+    @Published var filterType: FilterType = .all {
+        didSet {
+            updateFilteredCocktails()
+        }
+    }
 
     // MARK: - Private Properties
     private let cocktailsAPI: CocktailsAPI
     private let userDefaults: UserDefaultsProtocol
     private let favoritesKey = "FavoriteCocktailIDs"
-    private let scheduler: AnySchedulerOf<DispatchQueue>
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Computed Properties
     var favoriteCocktailIDs: [String] {
@@ -27,19 +31,10 @@ class CocktailDataManager: ObservableObject {
     // MARK: - Initialization
     init(
         cocktailsAPI: CocktailsAPI = FakeCocktailsAPI(),
-        userDefaults: UserDefaultsProtocol = UserDefaults.standard,
-        scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
+        userDefaults: UserDefaultsProtocol = UserDefaults.standard
     ) {
         self.cocktailsAPI = cocktailsAPI
         self.userDefaults = userDefaults
-        self.scheduler = scheduler
-
-        // Set up automatic filtering when allCocktails or filterType changes
-        Publishers.CombineLatest($allCocktails, $filterType)
-            .map { [weak self] allCocktails, filterType in
-                self?.filterCocktails(allCocktails, by: filterType) ?? []
-            }
-            .assign(to: &$filteredCocktails)
     }
 
     // MARK: - Public Methods
@@ -50,27 +45,18 @@ class CocktailDataManager: ObservableObject {
     }
 
     /// Loads all cocktails from the API
-    func loadData() {
+    func loadData() async {
         isLoading = true
         errorMessage = nil
 
-        cocktailsAPI.cocktailsPublisher
-            .receive(on: scheduler)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    self?.isLoading = false
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        self?.handleError(error)
-                    }
-                },
-                receiveValue: { [weak self] data in
-                    self?.parseCocktailsData(data)
-                }
-            )
-            .store(in: &cancellables)
+        do {
+            let data = try await cocktailsAPI.fetchCocktails()
+            await parseCocktailsData(data)
+        } catch {
+            handleError(error)
+        }
+
+        isLoading = false
     }
 
     /// Toggles the favorite status of a cocktail
@@ -87,13 +73,7 @@ class CocktailDataManager: ObservableObject {
 
         // Update the displayed cocktails to reflect favorite status
         updateCocktailFavoriteStatus()
-
-        // Trigger filtering update by re-assigning filterType
-        let currentFilter = filterType
-        filterType = currentFilter
-
-        // Notify view to update by triggering objectWillChange
-        objectWillChange.send()
+        updateFilteredCocktails()
     }
 
     /// Checks if a cocktail is marked as favorite
@@ -103,7 +83,7 @@ class CocktailDataManager: ObservableObject {
 
     // MARK: - Private Methods
 
-    private func parseCocktailsData(_ data: Data) {
+    private func parseCocktailsData(_ data: Data) async {
         do {
             let decoder = JSONDecoder()
             allCocktails = try decoder.decode([Cocktail].self, from: data)
@@ -130,6 +110,11 @@ class CocktailDataManager: ObservableObject {
         } else {
             errorMessage = "An unexpected error occurred: \(error.localizedDescription)"
         }
+    }
+
+    /// Updates filtered cocktails based on current filter type
+    private func updateFilteredCocktails() {
+        filteredCocktails = filterCocktails(allCocktails, by: filterType)
     }
 
     /// Filters cocktails based on the given filter type
@@ -159,3 +144,4 @@ class CocktailDataManager: ObservableObject {
         return favorites + nonFavorites
     }
 }
+

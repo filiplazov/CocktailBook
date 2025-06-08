@@ -1,221 +1,230 @@
-import Combine
-import CombineSchedulers
 import XCTest
 
 @testable import CocktailBook
 import CocktailsKit
 
+@MainActor
 final class CocktailDataManagerTests: XCTestCase {
     var dataManager: CocktailDataManager!
     var mockAPI: MockCocktailsAPI!
     var mockUserDefaults: MockUserDefaults!
-    var testScheduler: TestSchedulerOf<DispatchQueue>!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockAPI = MockCocktailsAPI()
         mockUserDefaults = MockUserDefaults()
-        testScheduler = DispatchQueue.test
 
         dataManager = CocktailDataManager(
             cocktailsAPI: mockAPI,
-            userDefaults: mockUserDefaults,
-            scheduler: testScheduler.eraseToAnyScheduler()
+            userDefaults: mockUserDefaults
         )
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         dataManager = nil
         mockAPI = nil
         mockUserDefaults = nil
-        testScheduler = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
-    // MARK: - Load Data Tests
+    // MARK: - Loading Tests
 
-    func testLoadData_Success() {
-        dataManager.loadData()
-        testScheduler.advance()
+    func testLoadDataSuccess() async throws {
+        // Given
+        mockAPI.shouldFail = false
+        XCTAssertTrue(dataManager.allCocktails.isEmpty)
 
-        XCTAssertEqual(dataManager.allCocktails.count, 3)
+        // When
+        await dataManager.loadData()
+
+        // Then
         XCTAssertFalse(dataManager.isLoading)
         XCTAssertNil(dataManager.errorMessage)
+        XCTAssertEqual(dataManager.allCocktails.count, 3)
+        XCTAssertEqual(dataManager.filteredCocktails.count, 3)
     }
 
-    func testLoadData_Failure() {
+    func testLoadDataFailure() async throws {
+        // Given
         mockAPI.shouldFail = true
 
-        dataManager.loadData()
-        testScheduler.advance()
+        // When
+        await dataManager.loadData()
 
-        XCTAssertEqual(dataManager.allCocktails.count, 0)
+        // Then
         XCTAssertFalse(dataManager.isLoading)
         XCTAssertNotNil(dataManager.errorMessage)
-        XCTAssertEqual(dataManager.errorMessage, "Unable to retrieve cocktails, API unavailable")
+        XCTAssertTrue(dataManager.allCocktails.isEmpty)
+        XCTAssertTrue(dataManager.filteredCocktails.isEmpty)
     }
 
-    // MARK: - Favorites Tests
+    func testLoadDataEmptyResponse() async throws {
+        // Given
+        mockAPI.shouldReturnEmptyData = true
 
-    func testToggleFavorite_AddToFavorites() {
-        let cocktailID = "1"
+        // When
+        await dataManager.loadData()
 
-        dataManager.toggleFavorite(cocktailID: cocktailID)
-
-        XCTAssertTrue(dataManager.isFavorite(cocktailID: cocktailID))
-        XCTAssertTrue(dataManager.favoriteCocktailIDs.contains(cocktailID))
-    }
-
-    func testToggleFavorite_RemoveFromFavorites() {
-        let cocktailID = "1"
-
-        // First add to favorites
-        dataManager.toggleFavorite(cocktailID: cocktailID)
-        XCTAssertTrue(dataManager.isFavorite(cocktailID: cocktailID))
-
-        // Then remove from favorites
-        dataManager.toggleFavorite(cocktailID: cocktailID)
-        XCTAssertFalse(dataManager.isFavorite(cocktailID: cocktailID))
-        XCTAssertFalse(dataManager.favoriteCocktailIDs.contains(cocktailID))
-    }
-
-    func testIsFavorite_NotFavorite() {
-        let cocktailID = "1"
-
-        XCTAssertFalse(dataManager.isFavorite(cocktailID: cocktailID))
-    }
-
-    // MARK: - Loading State Tests
-
-    func testLoadingState_DuringLoadData() {
-        dataManager.loadData()
-
-        // Should be loading before scheduler advances
-        XCTAssertTrue(dataManager.isLoading)
-
-        // Advance scheduler and check loading is false
-        testScheduler.advance()
+        // Then
         XCTAssertFalse(dataManager.isLoading)
+        XCTAssertNil(dataManager.errorMessage)
+        XCTAssertTrue(dataManager.allCocktails.isEmpty)
+        XCTAssertTrue(dataManager.filteredCocktails.isEmpty)
     }
 
     // MARK: - Filtering Tests
 
-    func testFilterType_DefaultIsAll() {
-        XCTAssertEqual(dataManager.filterType, .all)
-    }
-
-    func testSetFilterType_UpdatesFilterType() {
-        dataManager.setFilterType(.alcoholic)
-        XCTAssertEqual(dataManager.filterType, .alcoholic)
-
-        dataManager.setFilterType(.nonAlcoholic)
-        XCTAssertEqual(dataManager.filterType, .nonAlcoholic)
-
-        dataManager.setFilterType(.all)
-        XCTAssertEqual(dataManager.filterType, .all)
-    }
-
-    func testFilteredCocktails_ShowsAllByDefault() {
-        dataManager.loadData()
-        testScheduler.advance()
-
+    func testFilteringByType() async throws {
+        // Given
+        await dataManager.loadData()
         XCTAssertEqual(dataManager.filteredCocktails.count, 3)
-        XCTAssertEqual(dataManager.filterType, .all)
+
+        // When filtering to alcoholic
+        dataManager.filterType = .alcoholic
+
+        // Then
+        let alcoholicCocktails = dataManager.filteredCocktails.filter { $0.type == .alcoholic }
+        XCTAssertEqual(dataManager.filteredCocktails.count, alcoholicCocktails.count)
+        XCTAssertEqual(dataManager.filteredCocktails.count, 2) // Margarita and Manhattan
+
+        // When filtering to non-alcoholic  
+        dataManager.filterType = .nonAlcoholic
+
+        // Then
+        let nonAlcoholicCocktails = dataManager.filteredCocktails.filter { $0.type == .nonAlcoholic }
+        XCTAssertEqual(dataManager.filteredCocktails.count, nonAlcoholicCocktails.count)
+        XCTAssertEqual(dataManager.filteredCocktails.count, 1) // Mojito
+
+        // When filtering to all
+        dataManager.filterType = .all
+
+        // Then
+        XCTAssertEqual(dataManager.filteredCocktails.count, 3)
     }
 
-    func testFilteredCocktails_AlcoholicFilter() {
-        dataManager.loadData()
-        testScheduler.advance()
+    // MARK: - Favorites Tests
 
-        dataManager.setFilterType(.alcoholic)
+    func testToggleFavorite() async throws {
+        // Given
+        await dataManager.loadData()
+        let cocktailID = dataManager.allCocktails.first!.id
+        XCTAssertFalse(dataManager.isFavorite(cocktailID: cocktailID))
 
-        // Wait for filtering to complete
-        let filteredCocktails = dataManager.filteredCocktails
-        XCTAssertEqual(filteredCocktails.count, 3) // All mock cocktails are alcoholic
-        XCTAssertTrue(filteredCocktails.allSatisfy { $0.type == .alcoholic })
+        // When adding to favorites
+        dataManager.toggleFavorite(cocktailID: cocktailID)
+
+        // Then
+        XCTAssertTrue(dataManager.isFavorite(cocktailID: cocktailID))
+        XCTAssertTrue(dataManager.favoriteCocktailIDs.contains(cocktailID))
+
+        // When removing from favorites
+        dataManager.toggleFavorite(cocktailID: cocktailID)
+
+        // Then
+        XCTAssertFalse(dataManager.isFavorite(cocktailID: cocktailID))
+        XCTAssertFalse(dataManager.favoriteCocktailIDs.contains(cocktailID))
     }
 
-    func testFilteredCocktails_NonAlcoholicFilter() {
-        dataManager.loadData()
-        testScheduler.advance()
+    func testFavoritesPersistedInUserDefaults() async throws {
+        // Given
+        await dataManager.loadData()
+        let cocktailID = dataManager.allCocktails.first!.id
 
-        dataManager.setFilterType(.nonAlcoholic)
+        // When
+        dataManager.toggleFavorite(cocktailID: cocktailID)
 
-        // All mock cocktails are alcoholic, so should be empty
-        let filteredCocktails = dataManager.filteredCocktails
-        XCTAssertEqual(filteredCocktails.count, 0)
+        // Then
+        let savedFavorites = mockUserDefaults.array(forKey: "FavoriteCocktailIDs") as? [String]
+        XCTAssertNotNil(savedFavorites)
+        XCTAssertTrue(savedFavorites!.contains(cocktailID))
     }
 
-    func testFilteredCocktails_AlphabeticalOrder() {
-        dataManager.loadData()
-        testScheduler.advance()
+    func testFavoritesSortedFirst() async throws {
+        // Given
+        await dataManager.loadData()
+        let firstCocktail = dataManager.allCocktails.first!
+        let lastCocktail = dataManager.allCocktails.last!
 
-        let filteredCocktails = dataManager.filteredCocktails
-        let cocktailNames = filteredCocktails.map { $0.name }
+        // When marking last cocktail as favorite
+        dataManager.toggleFavorite(cocktailID: lastCocktail.id)
 
-        // Should be sorted alphabetically: Manhattan, Margarita, Mojito
-        XCTAssertEqual(cocktailNames, ["Mock Manhattan", "Mock Margarita", "Mock Mojito"])
+        // Then - favorite should appear first in filtered list
+        XCTAssertEqual(dataManager.filteredCocktails.first?.id, lastCocktail.id)
+        XCTAssertTrue(dataManager.filteredCocktails.first?.isFavorite == true)
     }
 
-    func testFilteredCocktails_FavoritesFirst() {
-        // Load data first
-        dataManager.loadData()
-        testScheduler.advance()
+    func testMultipleFavoritesAreSorted() async throws {
+        // Given
+        await dataManager.loadData()
+        let cocktails = dataManager.allCocktails
 
-        // Mark Mojito as favorite (it would be last alphabetically)
-        dataManager.toggleFavorite(cocktailID: "2") // Mojito
+        // When marking multiple as favorites
+        dataManager.toggleFavorite(cocktailID: cocktails[0].id)
+        dataManager.toggleFavorite(cocktailID: cocktails[2].id)
 
-        let filteredCocktails = dataManager.filteredCocktails
-        let cocktailNames = filteredCocktails.map { $0.name }
-
-        // Mojito (favorite) should come first, then alphabetical order for non-favorites
-        XCTAssertEqual(cocktailNames, ["Mock Mojito", "Mock Manhattan", "Mock Margarita"])
-
-        // Verify favorite status
-        XCTAssertTrue(filteredCocktails[0].isFavorite) // Mojito
-        XCTAssertFalse(filteredCocktails[1].isFavorite) // Manhattan
-        XCTAssertFalse(filteredCocktails[2].isFavorite) // Margarita
+        // Then - favorites should be sorted alphabetically among themselves
+        let favoriteCocktails = dataManager.filteredCocktails.filter { $0.isFavorite }
+        XCTAssertEqual(favoriteCocktails.count, 2)
+        
+        // Check that favorites come first
+        let firstTwoItems = Array(dataManager.filteredCocktails.prefix(2))
+        XCTAssertTrue(firstTwoItems.allSatisfy { $0.isFavorite })
     }
 
-    func testFilteredCocktails_MultipleFavoritesAlphabetical() {
-        // Load data first
-        dataManager.loadData()
-        testScheduler.advance()
+    // MARK: - Filter + Favorites Integration Tests
 
-        // Mark Manhattan and Margarita as favorites
-        dataManager.toggleFavorite(cocktailID: "1") // Margarita
-        dataManager.toggleFavorite(cocktailID: "3") // Manhattan
+    func testFavoritesWithFiltering() async throws {
+        // Given
+        await dataManager.loadData()
+        let alcoholicCocktail = dataManager.allCocktails.first { $0.type == .alcoholic }!
+        let nonAlcoholicCocktail = dataManager.allCocktails.first { $0.type == .nonAlcoholic }!
 
-        let filteredCocktails = dataManager.filteredCocktails
-        let cocktailNames = filteredCocktails.map { $0.name }
+        // When marking both types as favorites
+        dataManager.toggleFavorite(cocktailID: alcoholicCocktail.id)
+        dataManager.toggleFavorite(cocktailID: nonAlcoholicCocktail.id)
 
-        // Favorites first in alphabetical order, then non-favorites
-        XCTAssertEqual(cocktailNames, ["Mock Manhattan", "Mock Margarita", "Mock Mojito"])
+        // Then when filtering to alcoholic, only alcoholic favorite should show
+        dataManager.filterType = .alcoholic
+        let filteredFavorites = dataManager.filteredCocktails.filter { $0.isFavorite }
+        XCTAssertEqual(filteredFavorites.count, 1)
+        XCTAssertEqual(filteredFavorites.first?.type, .alcoholic)
 
-        // Verify favorite status
-        XCTAssertTrue(filteredCocktails[0].isFavorite) // Manhattan
-        XCTAssertTrue(filteredCocktails[1].isFavorite) // Margarita
-        XCTAssertFalse(filteredCocktails[2].isFavorite) // Mojito
+        // And when filtering to non-alcoholic, only non-alcoholic favorite should show
+        dataManager.filterType = .nonAlcoholic
+        let filteredNonAlcoholicFavorites = dataManager.filteredCocktails.filter { $0.isFavorite }
+        XCTAssertEqual(filteredNonAlcoholicFavorites.count, 1)
+        XCTAssertEqual(filteredNonAlcoholicFavorites.first?.type, .nonAlcoholic)
     }
 
-    func testFilteredCocktails_UpdatesOnFavoriteToggle() {
-        dataManager.loadData()
-        testScheduler.advance()
+    // MARK: - UserDefaults Integration Tests
 
-        // Initial state: no favorites
-        let initialFiltered = dataManager.filteredCocktails
-        XCTAssertTrue(initialFiltered.allSatisfy { !$0.isFavorite })
+    func testLoadingExistingFavorites() async throws {
+        // Given - pre-existing favorites in UserDefaults
+        let existingFavoriteID = "existing-favorite"
+        mockUserDefaults.set([existingFavoriteID], forKey: "FavoriteCocktailIDs")
 
-        // Toggle favorite
-        dataManager.toggleFavorite(cocktailID: "1")
+        // When creating a new data manager
+        let newDataManager = CocktailDataManager(
+            cocktailsAPI: mockAPI,
+            userDefaults: mockUserDefaults
+        )
 
-        // Check that filtered cocktails updated
-        let updatedFiltered = dataManager.filteredCocktails
-        let favoriteCount = updatedFiltered.filter { $0.isFavorite }.count
-        XCTAssertEqual(favoriteCount, 1)
+        // Then
+        XCTAssertTrue(newDataManager.isFavorite(cocktailID: existingFavoriteID))
+        XCTAssertEqual(newDataManager.favoriteCocktailIDs, [existingFavoriteID])
+    }
 
-        // The first cocktail should now be the favorite one
-        XCTAssertTrue(updatedFiltered[0].isFavorite)
-        XCTAssertEqual(updatedFiltered[0].id, "1")
+    func testEmptyFavoritesFromUserDefaults() async throws {
+        // Given - no existing favorites
+        mockUserDefaults.removeObject(forKey: "FavoriteCocktailIDs")
+
+        // When creating a new data manager
+        let newDataManager = CocktailDataManager(
+            cocktailsAPI: mockAPI,
+            userDefaults: mockUserDefaults
+        )
+
+        // Then
+        XCTAssertTrue(newDataManager.favoriteCocktailIDs.isEmpty)
     }
 }

@@ -1,62 +1,40 @@
 import Foundation
-import Combine
 
-public class FakeCocktailsAPI: CocktailsAPI {
+public actor FakeCocktailsAPI: CocktailsAPI {
     
-    public enum CocktailAPIFailure {
+    public enum CocktailAPIFailure: Sendable {
         case never
         case count(UInt)
     }
     
-    private let queue = DispatchQueue(label: "CocktailsAPI")
-    private let jsonData: Data
-    private var failure: CocktailAPIFailure
+    private let failure: CocktailAPIFailure
+    private var callCount: UInt = 0
     
     public init(withFailure failure: CocktailAPIFailure = .never) {
+        self.failure = failure
+    }
+    
+    private nonisolated func loadJSONData() throws -> Data {
         guard let file = Bundle.module.url(forResource: "sample", withExtension: "json") else {
             fatalError("sample.json can not be found")
         }
         guard let data = try? Data(contentsOf: file) else {
             fatalError("can not load contents of sample.json")
         }
-        jsonData = data
-        self.failure = failure
+        return data
     }
     
-    public var cocktailsPublisher: AnyPublisher<Data, CocktailsAPIError> {
-        if case let .count(count) = failure {
-            failure = count - 1 == 0 ? .never : .count(count - 1)
-            return Future<Data, CocktailsAPIError> { [weak self] promise in
-                self?.queue.async {
-                    sleep(3)
-                    return promise(.failure(.unavailable))
-                }
-            }
-            .eraseToAnyPublisher()
-        }
-        let data = jsonData
-        return Future<Data, CocktailsAPIError> { [weak self] promise in
-            self?.queue.async {
-                sleep(3)
-                return promise(.success(data))
+    public func fetchCocktails() async throws -> Data {
+        // Simulate network delay (3 seconds)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        
+        if case let .count(maxFailures) = failure {
+            if callCount < maxFailures {
+                callCount += 1
+                throw CocktailsAPIError.unavailable
             }
         }
-        .eraseToAnyPublisher()
-    }
-    
-    public func fetchCocktails(_ handler: @escaping (Result<Data, CocktailsAPIError>) -> Void) {
-        if case let .count(count) = failure {
-            failure = count - 1 == 0 ? .never : .count(count - 1)
-            queue.async {
-                sleep(3)
-                handler(.failure(.unavailable))
-            }
-            return
-        }
-        let data = jsonData
-        queue.async {
-            sleep(3)
-            handler(.success(data))
-        }
+        
+        return try loadJSONData()
     }
 } 

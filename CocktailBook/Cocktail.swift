@@ -2,7 +2,7 @@ import Foundation
 
 import CocktailsKit
 
-struct Cocktail: Identifiable {
+struct Cocktail: Identifiable, Sendable {
     let id: String
     let name: String
     let type: CocktailType
@@ -48,7 +48,7 @@ extension Cocktail: Codable {
     }
 }
 
-enum CocktailType: String, Codable, CaseIterable {
+enum CocktailType: String, Codable, CaseIterable, Sendable {
     case alcoholic = "alcoholic"
     case nonAlcoholic = "non-alcoholic"
 
@@ -62,7 +62,7 @@ enum CocktailType: String, Codable, CaseIterable {
     }
 }
 
-enum FilterType: CaseIterable {
+enum FilterType: CaseIterable, Sendable {
     case all
     case alcoholic
     case nonAlcoholic
