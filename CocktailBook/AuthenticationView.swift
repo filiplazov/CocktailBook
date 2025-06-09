@@ -35,10 +35,10 @@ struct AuthenticationView: View {
                 VStack(spacing: 24) {
                     if !showPinPad && !isAttemptingBiometric {
                         // Biometric Authentication Section
-                        biometricSection
+                        biometricSection()
                     } else if showPinPad {
                         // PIN Authentication Section
-                        pinSection
+                        pinSection()
                     } else {
                         // Loading state during biometric authentication
                         ProgressView()
@@ -78,9 +78,38 @@ struct AuthenticationView: View {
         }
     }
 
-    // MARK: - Biometric Section
+    // MARK: - Computed Properties
 
-    private var biometricSection: some View {
+    private var biometricIconName: String {
+        let context = LAContext()
+        switch context.biometryType {
+        case .faceID:
+            return "faceid"
+        case .touchID:
+            return "touchid"
+        default:
+            return "person.fill"
+        }
+    }
+
+    private var biometricDisplayName: String {
+        let context = LAContext()
+        switch context.biometryType {
+        case .faceID:
+            return "Face ID"
+        case .touchID:
+            return "Touch ID"
+        default:
+            return "Biometric"
+        }
+    }
+}
+
+// MARK: - Private Methods
+
+private extension AuthenticationView {
+    @ViewBuilder
+    func biometricSection() -> some View {
         VStack(spacing: 20) {
             Text("Authentication Required")
                 .font(.title2)
@@ -123,9 +152,8 @@ struct AuthenticationView: View {
         }
     }
 
-    // MARK: - PIN Section
-
-    private var pinSection: some View {
+    @ViewBuilder
+    func pinSection() -> some View {
         VStack(spacing: 24) {
             Text("Enter PIN")
                 .font(.title2)
@@ -186,35 +214,7 @@ struct AuthenticationView: View {
         }
     }
 
-    // MARK: - Computed Properties
-
-    private var biometricIconName: String {
-        let context = LAContext()
-        switch context.biometryType {
-        case .faceID:
-            return "faceid"
-        case .touchID:
-            return "touchid"
-        default:
-            return "person.fill"
-        }
-    }
-
-    private var biometricDisplayName: String {
-        let context = LAContext()
-        switch context.biometryType {
-        case .faceID:
-            return "Face ID"
-        case .touchID:
-            return "Touch ID"
-        default:
-            return "Biometric"
-        }
-    }
-
-    // MARK: - Private Methods
-
-    private func addPinDigit(_ digit: String) {
+    func addPinDigit(_ digit: String) {
         guard pinInput.count < 4 else { return }
 
         pinInput += digit
@@ -225,13 +225,13 @@ struct AuthenticationView: View {
         }
     }
 
-    private func deletePinDigit() {
+    func deletePinDigit() {
         if !pinInput.isEmpty {
             pinInput.removeLast()
         }
     }
 
-    private func checkPin() {
+    func checkPin() {
         let success = authManager.authenticateWithPin(pinInput)
 
         if success {
@@ -246,7 +246,7 @@ struct AuthenticationView: View {
         }
     }
 
-    private func attemptBiometricAuthentication() {
+    func attemptBiometricAuthentication() {
         guard !isAttemptingBiometric else { return }
 
         isAttemptingBiometric = true

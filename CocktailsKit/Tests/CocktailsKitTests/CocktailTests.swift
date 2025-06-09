@@ -29,63 +29,6 @@ final class CocktailTests: XCTestCase {
         XCTAssertFalse(cocktail.isFavorite) // Default value should be false
     }
 
-    private func createValidMargaritaJSON() -> String {
-        """
-        {
-            "id": "test-id-123",
-            "name": "Margarita",
-            "type": "alcoholic",
-            "shortDescription": "A classic tequila cocktail",
-            "longDescription": "The Margarita is a cocktail consisting of tequila, orange liqueur, and lime juice.",
-            "preparationMinutes": 5,
-            "imageName": "margarita_image",
-            "ingredients": [
-                {
-                    "imperialAmount": "2 oz",
-                    "name": "Tequila",
-                    "metricAmount": "60 ml"
-                },
-                {
-                    "imperialAmount": "1 oz",
-                    "name": "Triple sec",
-                    "metricAmount": "30 ml"
-                },
-                {
-                    "imperialAmount": "1 oz",
-                    "name": "Lime juice",
-                    "metricAmount": "30 ml"
-                },
-                {
-                    "imperialAmount": "",
-                    "name": "Salt",
-                    "metricAmount": ""
-                }
-            ]
-        }
-        """
-    }
-
-    private func assertValidMargaritaProperties(_ cocktail: Cocktail) {
-        XCTAssertEqual(cocktail.id, "test-id-123")
-        XCTAssertEqual(cocktail.name, "Margarita")
-        XCTAssertEqual(cocktail.type, .alcoholic)
-        XCTAssertEqual(cocktail.shortDescription, "A classic tequila cocktail")
-        XCTAssertEqual(
-            cocktail.longDescription,
-            "The Margarita is a cocktail consisting of tequila, orange liqueur, and lime juice."
-        )
-        XCTAssertEqual(cocktail.preparationMinutes, 5)
-        XCTAssertEqual(cocktail.imageName, "margarita_image")
-    }
-
-    private func assertValidMargaritaIngredients(_ cocktail: Cocktail) {
-        XCTAssertEqual(cocktail.ingredients.count, 4)
-        XCTAssertEqual(cocktail.ingredients[0].displayString, "2 oz Tequila")
-        XCTAssertEqual(cocktail.ingredients[1].displayString, "1 oz Triple sec")
-        XCTAssertEqual(cocktail.ingredients[2].displayString, "1 oz Lime juice")
-        XCTAssertEqual(cocktail.ingredients[3].displayString, "Salt")
-    }
-
     func testCocktail_DecodingFromMinimalJSON_ReturnsExpectedCocktail() throws {
         let jsonString = """
         {
@@ -340,5 +283,66 @@ final class CocktailTests: XCTestCase {
                 }
             }
         }
+    }
+}
+
+// MARK: - Test Helpers
+
+private extension CocktailTests {
+    func createValidMargaritaJSON() -> String {
+        """
+        {
+            "id": "test-id-123",
+            "name": "Margarita",
+            "type": "alcoholic",
+            "shortDescription": "A classic tequila cocktail",
+            "longDescription": "The Margarita is a cocktail consisting of tequila, orange liqueur, and lime juice.",
+            "preparationMinutes": 5,
+            "imageName": "margarita_image",
+            "ingredients": [
+                {
+                    "imperialAmount": "2 oz",
+                    "name": "Tequila",
+                    "metricAmount": "60 ml"
+                },
+                {
+                    "imperialAmount": "1 oz",
+                    "name": "Triple sec",
+                    "metricAmount": "30 ml"
+                },
+                {
+                    "imperialAmount": "1 oz",
+                    "name": "Lime juice",
+                    "metricAmount": "30 ml"
+                },
+                {
+                    "imperialAmount": "",
+                    "name": "Salt",
+                    "metricAmount": ""
+                }
+            ]
+        }
+        """
+    }
+
+    func assertValidMargaritaProperties(_ cocktail: Cocktail) {
+        XCTAssertEqual(cocktail.id, "test-id-123")
+        XCTAssertEqual(cocktail.name, "Margarita")
+        XCTAssertEqual(cocktail.type, .alcoholic)
+        XCTAssertEqual(cocktail.shortDescription, "A classic tequila cocktail")
+        XCTAssertEqual(
+            cocktail.longDescription,
+            "The Margarita is a cocktail consisting of tequila, orange liqueur, and lime juice."
+        )
+        XCTAssertEqual(cocktail.preparationMinutes, 5)
+        XCTAssertEqual(cocktail.imageName, "margarita_image")
+    }
+
+    func assertValidMargaritaIngredients(_ cocktail: Cocktail) {
+        XCTAssertEqual(cocktail.ingredients.count, 4)
+        XCTAssertEqual(cocktail.ingredients[0].displayString, "2 oz Tequila")
+        XCTAssertEqual(cocktail.ingredients[1].displayString, "1 oz Triple sec")
+        XCTAssertEqual(cocktail.ingredients[2].displayString, "1 oz Lime juice")
+        XCTAssertEqual(cocktail.ingredients[3].displayString, "Salt")
     }
 }

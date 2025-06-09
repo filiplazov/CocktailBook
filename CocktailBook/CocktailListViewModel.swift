@@ -90,10 +90,12 @@ final class CocktailListViewModel: ObservableObject {
             return ingredient.metricDisplayString
         }
     }
+}
 
-    // MARK: - Private Methods
+// MARK: - Private Methods
 
-    private func updateCocktailFavoriteStatus() {
+private extension CocktailListViewModel {
+    func updateCocktailFavoriteStatus() {
         let favoriteIDs = favoriteCocktailIDs
 
         // Update allCocktails
@@ -104,7 +106,7 @@ final class CocktailListViewModel: ObservableObject {
         }
     }
 
-    private func handleError(_ error: Error) {
+    func handleError(_ error: Error) {
         if let apiError = error as? CocktailsAPIError {
             errorMessage = apiError.errorDescription
         } else {
@@ -113,12 +115,12 @@ final class CocktailListViewModel: ObservableObject {
     }
 
     /// Updates filtered cocktails based on current filter type
-    private func updateFilteredCocktails() {
+    func updateFilteredCocktails() {
         filteredCocktails = filterCocktails(allCocktails, by: filterType)
     }
 
     /// Filters cocktails based on the given filter type
-    private func filterCocktails(_ allCocktails: [Cocktail], by filterType: FilterType) -> [Cocktail] {
+    func filterCocktails(_ allCocktails: [Cocktail], by filterType: FilterType) -> [Cocktail] {
         // Add favorite status to cocktails
         let cocktailsWithFavorites = allCocktails.map { cocktail in
             var mutableCocktail = cocktail

@@ -1,5 +1,27 @@
 # Claude Project Rules
 
+## Code Organization
+
+### Private Functions in Extensions
+Place all private functions in private extensions at the end of the file for all types (structs, classes, enums, actors). Keep all properties (stored and computed) in the main type definition.
+
+**Example:**
+```swift
+struct MyView: View {
+    @State private var isActive = false
+    private var computedValue: String { "value" }
+    
+    var body: some View { 
+        // View content
+    }
+}
+
+// MARK: - Private Methods
+private extension MyView {
+    func privateMethod() { }
+}
+```
+
 ## Unit Test Naming Convention
 
 **Format:** `test[Component]_[Scenario]_[ExpectedOutcome]()`

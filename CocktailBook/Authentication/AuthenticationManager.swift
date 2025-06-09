@@ -170,10 +170,12 @@ final class AuthenticationManager: ObservableObject {
             UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
         }
     }
+}
 
-    // MARK: - Private Methods
+// MARK: - Private Methods
 
-    private func updateBiometricStatus() async {
+private extension AuthenticationManager {
+    func updateBiometricStatus() async {
         var error: NSError?
 
         let canEvaluate = localAuthService.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
