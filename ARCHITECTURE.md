@@ -8,7 +8,7 @@
 
 ### MVVM + Swift Concurrency (Model-View-ViewModel)
 - **View Layer**: SwiftUI views (`CocktailListView`, `CocktailDetailView`)
-- **ViewModel Layer**: `CocktailDataManager` (@MainActor ObservableObject)
+- **ViewModel Layer**: `CocktailListViewModel` (@MainActor ObservableObject)
 - **Model Layer**: `Cocktail` struct and related data models (Sendable conforming)
 - **Async Programming**: Swift Concurrency with async/await for data flow and state management
 
@@ -59,7 +59,7 @@ CocktailBook/
 │   ├── CocktailListView.swift
 │   └── CocktailDetailView.swift
 ├── 🧠 Business Logic
-│   └── CocktailDataManager.swift
+│   └── CocktailListViewModel.swift
 ├── 📊 Models
 │   └── Cocktail.swift
 ├── 🔧 Utilities
@@ -71,7 +71,7 @@ CocktailBook/
 
 CocktailBookTests/
 ├── 🧪 Test Files
-│   ├── CocktailDataManagerTests.swift
+│   ├── CocktailListViewModelTests.swift
 │   └── CocktailModelTests.swift
 └── 🎭 Test Mocks
     ├── MockCocktailsAPI.swift
@@ -127,7 +127,7 @@ actor FakeCocktailsAPI: CocktailsAPI {
 - Clean separation from main app logic
 - Reusable across different targets (app, tests, previews)
 
-### 2. CocktailDataManager (ViewModel)
+### 2. CocktailListViewModel (ViewModel)
 **Purpose**: Central business logic controller implementing the ViewModel pattern with @MainActor
 
 **Key Responsibilities**:
@@ -149,7 +149,7 @@ actor FakeCocktailsAPI: CocktailsAPI {
 **Key Features**:
 ```swift
 @MainActor
-final class CocktailDataManager: ObservableObject {
+final class CocktailListViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -252,7 +252,7 @@ func testCocktailDecoding_WithValidJSON_ReturnsExpectedCocktail()
 
 ### Test Categories
 
-#### Data Manager Tests (`CocktailDataManagerTests`)
+#### Data Manager Tests (`CocktailListViewModelTests`)
 - ✅ Data loading success/failure scenarios with async/await
 - ✅ Favorites management (add/remove/check)
 - ✅ Loading state verification with @MainActor
@@ -303,10 +303,10 @@ All source files use consistent MARK comments for organization:
 
 ### File Naming Conventions
 - **Views**: `[Purpose]View.swift` (e.g., `CocktailDetailView.swift`)
-- **Business Logic**: `[Domain]Manager.swift` (e.g., `CocktailDataManager.swift`)
+- **Business Logic**: `[Domain]Manager.swift` (e.g., `CocktailListViewModel.swift`)
 - **Models**: `[Entity].swift` (e.g., `Cocktail.swift`)
 - **Protocols**: `[Purpose]Protocol.swift` (e.g., `UserDefaultsProtocol.swift`)
-- **Tests**: `[Target]Tests.swift` (e.g., `CocktailDataManagerTests.swift`)
+- **Tests**: `[Target]Tests.swift` (e.g., `CocktailListViewModelTests.swift`)
 - **Mocks**: `Mock[Type].swift` (e.g., `MockCocktailsAPI.swift`)
 
 ### Code Quality Practices
@@ -323,17 +323,17 @@ All source files use consistent MARK comments for organization:
 
 ### 1. App Launch
 ```
-CocktailBookApp → CocktailListView → CocktailDataManager.loadData() async
+CocktailBookApp → CocktailListView → CocktailListViewModel.loadData() async
 ```
 
 ### 2. Async Data Loading Flow
 ```
-CocktailDataManager → CocktailsKit.CocktailsAPI (actor) → JSON Response → Sendable Cocktail Models → @Published Properties → SwiftUI Update
+CocktailListViewModel → CocktailsKit.CocktailsAPI (actor) → JSON Response → Sendable Cocktail Models → @Published Properties → SwiftUI Update
 ```
 
 ### 3. User Interaction Flow
 ```
-User Tap → SwiftUI Action → CocktailDataManager Async Method → State Update → UI Refresh
+User Tap → SwiftUI Action → CocktailListViewModel Async Method → State Update → UI Refresh
 ```
 
 ### 4. Filtering System

@@ -7,28 +7,20 @@ final class MockCocktailsAPI: CocktailsAPI, @unchecked Sendable {
     var shouldFail = false
     var shouldReturnEmptyData = false
 
-    func fetchCocktails() async throws -> Data {
+    func fetchCocktails() async throws -> [Cocktail] {
         if shouldFail {
             throw CocktailsAPIError.unavailable
         }
 
         if shouldReturnEmptyData {
-            return Data("[]".utf8)
+            return []
         }
 
-        // Return mock JSON data
-        let mockCocktails = [
+        // Return mock cocktails directly
+        return [
             MockData.mockMargarita,
             MockData.mockMojito,
             MockData.mockManhattan
         ]
-
-        do {
-            let encoder = JSONEncoder()
-            let jsonData = try encoder.encode(mockCocktails)
-            return jsonData
-        } catch {
-            throw CocktailsAPIError.unavailable
-        }
     }
 }

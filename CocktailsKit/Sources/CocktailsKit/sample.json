@@ -9,32 +9,32 @@
     "imageName": "pinacolada",
     "ingredients": [
       {
-        "amount": "4 oz",
+        "imperialAmount": "4 oz",
         "name": "rum",
         "metricAmount": "120 ml"
       },
       {
-        "amount": "3 oz",
+        "imperialAmount": "3 oz",
         "name": "fresh pineapple juice, chilled (or use frozen pineapple chunks for a smoothie-like texture)",
         "metricAmount": "90 ml"
       },
       {
-        "amount": "2 oz",
+        "imperialAmount": "2 oz",
         "name": "cream of coconut (or use a combination of sweetened coconut cream and coconut milk)",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "1 oz",
+        "imperialAmount": "1 oz",
         "name": "freshly squeezed lime juice (optional)",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "2 cups",
+        "imperialAmount": "2 cups",
         "name": "ice",
         "metricAmount": "480 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "Fresh pineapple, for garnish",
         "metricAmount": ""
       }
@@ -50,32 +50,32 @@
     "imageName": "mojito",
     "ingredients": [
       {
-        "amount": "10",
+        "imperialAmount": "10",
         "name": "fresh mint leaves",
         "metricAmount": "10"
       },
       {
-        "amount": "½",
+        "imperialAmount": "½",
         "name": "lime, cut into 4 wedges",
         "metricAmount": "½"
       },
       {
-        "amount": "2 tablespoons",
+        "imperialAmount": "2 tablespoons",
         "name": "white sugar, or to taste",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "1 cup",
+        "imperialAmount": "1 cup",
         "name": "ice cubes",
         "metricAmount": "240 ml"
       },
       {
-        "amount": "1 ½ fluid ounces",
+        "imperialAmount": "1 ½ fluid ounces",
         "name": "white rum",
         "metricAmount": "45 ml"
       },
       {
-        "amount": "½ cup",
+        "imperialAmount": "½ cup",
         "name": "club soda",
         "metricAmount": "120 ml"
       }
@@ -91,22 +91,22 @@
     "imageName": "daiquiri",
     "ingredients": [
       {
-        "amount": "1 ½ fluid ounces",
+        "imperialAmount": "1 ½ fluid ounces",
         "name": "light rum",
         "metricAmount": "45 ml"
       },
       {
-        "amount": "1 fluid ounce",
+        "imperialAmount": "1 fluid ounce",
         "name": "lime juice",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "1 teaspoon",
+        "imperialAmount": "1 teaspoon",
         "name": "simple syrup",
         "metricAmount": "5 ml"
       },
       {
-        "amount": "1 cup",
+        "imperialAmount": "1 cup",
         "name": "ice",
         "metricAmount": "240 ml"
       }
@@ -122,27 +122,27 @@
     "imageName": "manhattan",
     "ingredients": [
       {
-        "amount": "2 fluid ounces",
+        "imperialAmount": "2 fluid ounces",
         "name": "rye whiskey",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "½ fluid ounce",
+        "imperialAmount": "½ fluid ounce",
         "name": "sweet vermouth",
         "metricAmount": "15 ml"
       },
       {
-        "amount": "1 dash",
+        "imperialAmount": "1 dash",
         "name": "Angostura bitters",
         "metricAmount": "1 dash"
       },
       {
-        "amount": "1 cup",
+        "imperialAmount": "1 cup",
         "name": "ice cubes",
         "metricAmount": "240 ml"
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "maraschino cherry",
         "metricAmount": "1"
       }
@@ -158,32 +158,32 @@
     "imageName": "virginBerryCaipirinha",
     "ingredients": [
       {
-        "amount": "300 g",
+        "imperialAmount": "300 g",
         "name": "fresh mixed berries",
         "metricAmount": "300 g"
       },
       {
-        "amount": "4",
+        "imperialAmount": "4",
         "name": "Lime cut and halved",
         "metricAmount": "4"
       },
       {
-        "amount": "4 tbsp.",
+        "imperialAmount": "4 tbsp.",
         "name": "mint leaves roughly torn",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "8 tbsp.",
+        "imperialAmount": "8 tbsp.",
         "name": "light brown soft sugar",
         "metricAmount": "120 ml"
       },
       {
-        "amount": "600 ml",
+        "imperialAmount": "600 ml",
         "name": "cream soda",
         "metricAmount": "600 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "crushed ice",
         "metricAmount": ""
       }
@@ -199,32 +199,32 @@
     "imageName": "basilLemonadePunch",
     "ingredients": [
       {
-        "amount": "1 cup",
+        "imperialAmount": "1 cup",
         "name": "fresh basil leaves, loosely packed and coarsely chopped",
         "metricAmount": "240 ml"
       },
       {
-        "amount": "¼ cup",
+        "imperialAmount": "¼ cup",
         "name": "sugar",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "3 cups",
+        "imperialAmount": "3 cups",
         "name": "prepared lemonade",
         "metricAmount": "720 ml"
       },
       {
-        "amount": "3 cups",
+        "imperialAmount": "3 cups",
         "name": "seltzer water",
         "metricAmount": "720 ml"
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "lemon, sliced",
         "metricAmount": "1"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "crushed ice",
         "metricAmount": ""
       }
@@ -240,27 +240,27 @@
     "imageName": "ginAndTonic",
     "ingredients": [
       {
-        "amount": "4 cubes",
+        "imperialAmount": "4 cubes",
         "name": "ice",
         "metricAmount": "4 cubes"
       },
       {
-        "amount": "2 fluid ounces",
+        "imperialAmount": "2 fluid ounces",
         "name": "gin",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "4 fluid ounces",
+        "imperialAmount": "4 fluid ounces",
         "name": "tonic water",
         "metricAmount": "120 ml"
       },
       {
-        "amount": "1 tablespoon",
+        "imperialAmount": "1 tablespoon",
         "name": "fresh lime juice",
         "metricAmount": "15 ml"
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "lime wedge",
         "metricAmount": "1"
       }
@@ -276,17 +276,17 @@
     "imageName": "margarita",
     "ingredients": [
       {
-        "amount": "1 (6 ounce) can",
+        "imperialAmount": "1 (6 ounce) can",
         "name": "frozen limeade concentrate",
         "metricAmount": "1 (180 ml) can"
       },
       {
-        "amount": "6 fluid ounces",
+        "imperialAmount": "6 fluid ounces",
         "name": "tequila",
         "metricAmount": "180 ml"
       },
       {
-        "amount": "2 fluid ounces",
+        "imperialAmount": "2 fluid ounces",
         "name": "triple sec",
         "metricAmount": "60 ml"
       }
@@ -302,47 +302,47 @@
     "imageName": "bloodyMarry",
     "ingredients": [
       {
-        "amount": "1 ½ cups",
+        "imperialAmount": "1 ½ cups",
         "name": "ice cubes",
         "metricAmount": "360 ml"
       },
       {
-        "amount": "4 fluid ounces",
+        "imperialAmount": "4 fluid ounces",
         "name": "tomato juice",
         "metricAmount": "120 ml"
       },
       {
-        "amount": "1 ½ fluid ounces",
+        "imperialAmount": "1 ½ fluid ounces",
         "name": "vodka",
         "metricAmount": "45 ml"
       },
       {
-        "amount": "¼ fluid ounce",
+        "imperialAmount": "¼ fluid ounce",
         "name": "fresh lemon juice",
         "metricAmount": "7 ml"
       },
       {
-        "amount": "4 dashes",
+        "imperialAmount": "4 dashes",
         "name": "hot pepper sauce (such as Tabasco®)",
         "metricAmount": "4 dashes"
       },
       {
-        "amount": "2 dashes",
+        "imperialAmount": "2 dashes",
         "name": "Worcestershire sauce",
         "metricAmount": "2 dashes"
       },
       {
-        "amount": "1 pinch",
+        "imperialAmount": "1 pinch",
         "name": "salt and ground black pepper",
         "metricAmount": "1 pinch"
       },
       {
-        "amount": "1 pinch",
+        "imperialAmount": "1 pinch",
         "name": "salt and ground black pepper",
         "metricAmount": "1 pinch"
       },
       {
-        "amount": "1 stalk",
+        "imperialAmount": "1 stalk",
         "name": "celery, for garnish",
         "metricAmount": "1 stalk"
       }
@@ -358,17 +358,17 @@
     "imageName": "screwdriver",
     "ingredients": [
       {
-        "amount": "1 (1.5 fluid ounce) jigger",
+        "imperialAmount": "1 (1.5 fluid ounce) jigger",
         "name": "good quality vodka",
         "metricAmount": "45 ml"
       },
       {
-        "amount": "6 fluid ounces",
+        "imperialAmount": "6 fluid ounces",
         "name": "pulp-free pure premium orange juice",
         "metricAmount": "180 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "ice cubes",
         "metricAmount": ""
       }
@@ -384,42 +384,42 @@
     "imageName": "oldFashioned",
     "ingredients": [
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "sugar cube",
         "metricAmount": "1"
       },
       {
-        "amount": "1 teaspoon",
+        "imperialAmount": "1 teaspoon",
         "name": "water",
         "metricAmount": "5 ml"
       },
       {
-        "amount": "1 dash",
+        "imperialAmount": "1 dash",
         "name": "bitters",
         "metricAmount": "1 dash"
       },
       {
-        "amount": "2 fluid ounces",
+        "imperialAmount": "2 fluid ounces",
         "name": "whiskey (rye or bourbon)",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "lemon twist",
         "metricAmount": "1"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "ice cubes",
         "metricAmount": ""
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "orange slice, for garnish",
         "metricAmount": "1"
       },
       {
-        "amount": "1",
+        "imperialAmount": "1",
         "name": "maraschino cherry, for garnish",
         "metricAmount": "1"
       }
@@ -435,47 +435,47 @@
     "imageName": "margaritaMocktail",
     "ingredients": [
       {
-        "amount": "2 oz.",
+        "imperialAmount": "2 oz.",
         "name": "honey or agave",
         "metricAmount": "60 ml"
       },
       {
-        "amount": "1 oz.",
+        "imperialAmount": "1 oz.",
         "name": "limeade concentrate",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "1 oz.",
+        "imperialAmount": "1 oz.",
         "name": "fresh lime juice",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "½ oz.",
+        "imperialAmount": "½ oz.",
         "name": "grapefruit juice",
         "metricAmount": "15 ml"
       },
       {
-        "amount": "¼ teaspoon",
+        "imperialAmount": "¼ teaspoon",
         "name": "orange extract or orange bitters",
         "metricAmount": "1.25 ml"
       },
       {
-        "amount": "¾ cup",
+        "imperialAmount": "¾ cup",
         "name": "ice",
         "metricAmount": "180 ml"
       },
       {
-        "amount": "1 tablespoon",
+        "imperialAmount": "1 tablespoon",
         "name": "flake salt",
         "metricAmount": "15 ml"
       },
       {
-        "amount": "½ teaspoon",
+        "imperialAmount": "½ teaspoon",
         "name": "chili powder",
         "metricAmount": "2.5 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "limes for garnish",
         "metricAmount": ""
       }
@@ -491,42 +491,42 @@
     "imageName": "nonAlcoholicJuicyJulep",
     "ingredients": [
       {
-        "amount": "1 measure",
+        "imperialAmount": "1 measure",
         "name": "pineapple juice",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "1 measure",
+        "imperialAmount": "1 measure",
         "name": "orange juice",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "1 measure",
+        "imperialAmount": "1 measure",
         "name": "freshly squeeze lime juice",
         "metricAmount": "30 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "ginger ale, to top off",
         "metricAmount": ""
       },
       {
-        "amount": "1 teaspoon",
+        "imperialAmount": "1 teaspoon",
         "name": "mint , crushed or finely chopped",
         "metricAmount": "5 ml"
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "sprig of mint , for garnish",
         "metricAmount": ""
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "lime wedge and/or pineapple slice , for garnish",
         "metricAmount": ""
       },
       {
-        "amount": "",
+        "imperialAmount": "",
         "name": "ice",
         "metricAmount": ""
       }

@@ -2,7 +2,7 @@ import CocktailsKit
 import Foundation
 
 @MainActor
-final class CocktailDataManager: ObservableObject {
+final class CocktailListViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -50,8 +50,8 @@ final class CocktailDataManager: ObservableObject {
         errorMessage = nil
 
         do {
-            let data = try await cocktailsAPI.fetchCocktails()
-            await parseCocktailsData(data)
+            allCocktails = try await cocktailsAPI.fetchCocktails()
+            updateCocktailFavoriteStatus()
         } catch {
             handleError(error)
         }
@@ -92,16 +92,6 @@ final class CocktailDataManager: ObservableObject {
     }
 
     // MARK: - Private Methods
-
-    private func parseCocktailsData(_ data: Data) async {
-        do {
-            let decoder = JSONDecoder()
-            allCocktails = try decoder.decode([Cocktail].self, from: data)
-            updateCocktailFavoriteStatus()
-        } catch {
-            handleError(CocktailsAPIError.unavailable)
-        }
-    }
 
     private func updateCocktailFavoriteStatus() {
         let favoriteIDs = favoriteCocktailIDs

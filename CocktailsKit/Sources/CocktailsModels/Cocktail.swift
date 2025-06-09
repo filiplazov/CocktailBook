@@ -1,27 +1,47 @@
 import Foundation
 
-import CocktailsKit
+public struct Cocktail: Identifiable, Sendable {
+    public let id: String
+    public let name: String
+    public let type: CocktailType
+    public let shortDescription: String
+    public let longDescription: String
+    public let preparationMinutes: Int
+    public let imageName: String
+    public let ingredients: [Ingredient]
 
-struct Cocktail: Identifiable, Sendable {
-    let id: String
-    let name: String
-    let type: CocktailType
-    let shortDescription: String
-    let longDescription: String
-    let preparationMinutes: Int
-    let imageName: String
-    let ingredients: [Ingredient]
-
-    var isFavorite: Bool = false
+    public var isFavorite: Bool = false
 
     // Custom coding keys to exclude isFavorite from JSON
     private enum CodingKeys: String, CodingKey {
         case id, name, type, shortDescription, longDescription, preparationMinutes, imageName, ingredients
     }
+    
+    public init(
+        id: String,
+        name: String,
+        type: CocktailType,
+        shortDescription: String,
+        longDescription: String,
+        preparationMinutes: Int,
+        imageName: String,
+        ingredients: [Ingredient],
+        isFavorite: Bool = false
+    ) {
+        self.id = id
+        self.name = name
+        self.type = type
+        self.shortDescription = shortDescription
+        self.longDescription = longDescription
+        self.preparationMinutes = preparationMinutes
+        self.imageName = imageName
+        self.ingredients = ingredients
+        self.isFavorite = isFavorite
+    }
 }
 
 extension Cocktail: Codable {
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
@@ -34,7 +54,7 @@ extension Cocktail: Codable {
         isFavorite = false // Default value
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
@@ -48,33 +68,16 @@ extension Cocktail: Codable {
     }
 }
 
-enum CocktailType: String, Codable, CaseIterable, Sendable {
+public enum CocktailType: String, Codable, CaseIterable, Sendable {
     case alcoholic = "alcoholic"
     case nonAlcoholic = "non-alcoholic"
 
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .alcoholic:
             return "Alcoholic"
         case .nonAlcoholic:
             return "Non-Alcoholic"
-        }
-    }
-}
-
-enum FilterType: CaseIterable, Sendable {
-    case all
-    case alcoholic
-    case nonAlcoholic
-
-    var title: String {
-        switch self {
-        case .all:
-            return "All Cocktails"
-        case .alcoholic:
-            return "Alcoholic Cocktails"
-        case .nonAlcoholic:
-            return "Non-Alcoholic Cocktails"
         }
     }
 }

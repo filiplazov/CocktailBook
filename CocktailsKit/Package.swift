@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CocktailsKit",
     platforms: [
-        .iOS(.v18),
+        .iOS(.v13),
         .macOS(.v10_15)
     ],
     products: [
@@ -14,14 +14,22 @@ let package = Package(
             name: "CocktailsKit",
             targets: ["CocktailsKit"]
         ),
+        .library(
+            name: "CocktailsModels",
+            targets: ["CocktailsModels"]
+        ),
     ],
     dependencies: [
         // No external dependencies needed for this package
     ],
     targets: [
         .target(
+            name: "CocktailsModels",
+            dependencies: []
+        ),
+        .target(
             name: "CocktailsKit",
-            dependencies: [],
+            dependencies: ["CocktailsModels"],
             resources: [
                 .process("sample.json")
             ]

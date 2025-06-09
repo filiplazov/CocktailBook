@@ -3,7 +3,7 @@ import XCTest
 
 final class IngredientTests: XCTestCase {
     
-    func testIngredientInitialization() {
+    func testIngredient_Initialization_SetsAllProperties() {
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
         
         XCTAssertEqual(ingredient.imperialAmount, "2 oz")
@@ -11,7 +11,7 @@ final class IngredientTests: XCTestCase {
         XCTAssertEqual(ingredient.metricAmount, "60 ml")
     }
     
-    func testDisplayString() {
+    func testIngredient_DisplayString_ReturnsFormattedString() {
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
         XCTAssertEqual(ingredient.displayString, "2 oz Tequila")
         
@@ -19,7 +19,7 @@ final class IngredientTests: XCTestCase {
         XCTAssertEqual(emptyAmountIngredient.displayString, "Salt")
     }
     
-    func testMetricDisplayString() {
+    func testIngredient_MetricDisplayString_ReturnsFormattedMetricString() {
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
         XCTAssertEqual(ingredient.metricDisplayString, "60 ml Tequila")
         
@@ -27,7 +27,7 @@ final class IngredientTests: XCTestCase {
         XCTAssertEqual(emptyMetricIngredient.metricDisplayString, "Salt")
     }
     
-    func testJSONSerialization() throws {
+    func testIngredient_JSONSerialization_EncodesAndDecodesCorrectly() throws {
         let ingredient = Ingredient(imperialAmount: "2 oz", name: "Tequila", metricAmount: "60 ml")
         
         // Encode to JSON
@@ -43,11 +43,11 @@ final class IngredientTests: XCTestCase {
         XCTAssertEqual(decodedIngredient.metricAmount, ingredient.metricAmount)
     }
     
-    func testJSONDeserializationFromLegacyFormat() throws {
-        // Test that we can still deserialize JSON that uses "amount" key
+    func testIngredient_JSONDeserialization_WithImperialAmountKey_DecodesCorrectly() throws {
+        // Test that we can deserialize JSON that uses "imperialAmount" key
         let jsonString = """
         {
-            "amount": "2 oz",
+            "imperialAmount": "2 oz",
             "name": "Tequila",
             "metricAmount": "60 ml"
         }

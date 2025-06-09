@@ -1,4 +1,5 @@
 import Foundation
+import CocktailsModels
 
 public actor FakeCocktailsAPI: CocktailsAPI {
     
@@ -24,7 +25,7 @@ public actor FakeCocktailsAPI: CocktailsAPI {
         return data
     }
     
-    public func fetchCocktails() async throws -> Data {
+    public func fetchCocktails() async throws -> [Cocktail] {
         // Simulate network delay (3 seconds)
         try await Task.sleep(nanoseconds: 3_000_000_000)
         
@@ -35,6 +36,8 @@ public actor FakeCocktailsAPI: CocktailsAPI {
             }
         }
         
-        return try loadJSONData()
+        let data = try loadJSONData()
+        let decoder = JSONDecoder()
+        return try decoder.decode([Cocktail].self, from: data)
     }
 } 

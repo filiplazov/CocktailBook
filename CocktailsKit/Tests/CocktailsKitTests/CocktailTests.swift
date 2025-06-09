@@ -1,16 +1,28 @@
-@testable import CocktailBook
 import XCTest
+@testable import CocktailsKit
 
-import CocktailsKit
-
-class CocktailModelTests: XCTestCase {
+final class CocktailTests: XCTestCase {
     // MARK: - JSON Decoding Tests
 
-    func testCocktailDecodingFromValidJSON() throws {
+    func testCocktail_DecodingFromValidJSON_ReturnsExpectedCocktail() throws {
         let jsonString = createValidMargaritaJSON()
         let json = Data(jsonString.utf8)
 
         let cocktail = try JSONDecoder().decode(Cocktail.self, from: json)
+
+        assertValidMargaritaProperties(cocktail)
+        assertValidMargaritaIngredients(cocktail)
+        XCTAssertFalse(cocktail.isFavorite) // Default value should be false
+    }
+    
+    func testCocktail_DecodingFromArrayJSON_ParsesCocktailsCorrectly() throws {
+        let jsonString = createValidMargaritaJSON()
+        let arrayJsonString = "[\(jsonString)]"
+        let json = Data(arrayJsonString.utf8)
+
+        let cocktails = try JSONDecoder().decode([Cocktail].self, from: json)
+        XCTAssertEqual(cocktails.count, 1)
+        let cocktail = cocktails[0]
 
         assertValidMargaritaProperties(cocktail)
         assertValidMargaritaIngredients(cocktail)
@@ -29,22 +41,22 @@ class CocktailModelTests: XCTestCase {
             "imageName": "margarita_image",
             "ingredients": [
                 {
-                    "amount": "2 oz",
+                    "imperialAmount": "2 oz",
                     "name": "Tequila",
                     "metricAmount": "60 ml"
                 },
                 {
-                    "amount": "1 oz",
+                    "imperialAmount": "1 oz",
                     "name": "Triple sec",
                     "metricAmount": "30 ml"
                 },
                 {
-                    "amount": "1 oz",
+                    "imperialAmount": "1 oz",
                     "name": "Lime juice",
                     "metricAmount": "30 ml"
                 },
                 {
-                    "amount": "",
+                    "imperialAmount": "",
                     "name": "Salt",
                     "metricAmount": ""
                 }
@@ -74,7 +86,7 @@ class CocktailModelTests: XCTestCase {
         XCTAssertEqual(cocktail.ingredients[3].displayString, "Salt")
     }
 
-    func testCocktailDecodingFromMinimalJSON() throws {
+    func testCocktail_DecodingFromMinimalJSON_ReturnsExpectedCocktail() throws {
         let jsonString = """
         {
             "id": "minimal-test",
@@ -86,7 +98,7 @@ class CocktailModelTests: XCTestCase {
             "imageName": "simple",
             "ingredients": [
                 {
-                    "amount": "1 cup",
+                    "imperialAmount": "1 cup",
                     "name": "Water",
                     "metricAmount": "240 ml"
                 }
@@ -103,7 +115,7 @@ class CocktailModelTests: XCTestCase {
         XCTAssertFalse(cocktail.isFavorite)
     }
 
-    func testCocktailDecodingWithInvalidType() throws {
+    func testCocktail_DecodingWithInvalidType_ThrowsError() throws {
         let jsonString = """
         {
             "id": "invalid-type-test",
@@ -115,7 +127,7 @@ class CocktailModelTests: XCTestCase {
             "imageName": "invalid",
             "ingredients": [
                 {
-                    "amount": "",
+                    "imperialAmount": "",
                     "name": "Nothing",
                     "metricAmount": ""
                 }
@@ -129,7 +141,7 @@ class CocktailModelTests: XCTestCase {
         }
     }
 
-    func testCocktailDecodingWithMissingFields() throws {
+    func testCocktail_DecodingWithMissingFields_ThrowsError() throws {
         let jsonString = """
         {
             "id": "missing-fields-test",
@@ -145,7 +157,7 @@ class CocktailModelTests: XCTestCase {
 
     // MARK: - JSON Encoding Tests
 
-    func testCocktailJSONEncoding() throws {
+    func testCocktail_JSONEncoding_EncodesAndDecodesCorrectly() throws {
         var cocktail = Cocktail(
             id: "encode-test",
             name: "Test Cocktail",
@@ -182,19 +194,53 @@ class CocktailModelTests: XCTestCase {
         XCTAssertFalse(decoded.isFavorite)
     }
 
+    func testCocktail_EncodingAndDecodingArray_WorksCorrectly() throws {
+        let cocktails = [
+            Cocktail(
+                id: "test1",
+                name: "Test Cocktail 1",
+                type: .alcoholic,
+                shortDescription: "Test",
+                longDescription: "Test description",
+                preparationMinutes: 5,
+                imageName: "test1",
+                ingredients: []
+            ),
+            Cocktail(
+                id: "test2",
+                name: "Test Cocktail 2",
+                type: .nonAlcoholic,
+                shortDescription: "Test 2",
+                longDescription: "Test description 2",
+                preparationMinutes: 3,
+                imageName: "test2",
+                ingredients: []
+            )
+        ]
+        
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        let encoded = try encoder.encode(cocktails)
+        let decoded = try JSONDecoder().decode([Cocktail].self, from: encoded)
+        
+        XCTAssertEqual(decoded.count, 2)
+        XCTAssertEqual(decoded[0].id, "test1")
+        XCTAssertEqual(decoded[1].id, "test2")
+    }
+
     // MARK: - CocktailType Tests
 
-    func testCocktailTypeDisplayNames() {
+    func testCocktailType_DisplayNames_ReturnsCorrectStrings() {
         XCTAssertEqual(CocktailType.alcoholic.displayName, "Alcoholic")
         XCTAssertEqual(CocktailType.nonAlcoholic.displayName, "Non-Alcoholic")
     }
 
-    func testCocktailTypeRawValues() {
+    func testCocktailType_RawValues_ReturnsCorrectStrings() {
         XCTAssertEqual(CocktailType.alcoholic.rawValue, "alcoholic")
         XCTAssertEqual(CocktailType.nonAlcoholic.rawValue, "non-alcoholic")
     }
 
-    func testCocktailTypeDecoding() throws {
+    func testCocktailType_Decoding_ReturnsCorrectTypes() throws {
         let alcoholicData = Data("\"alcoholic\"".utf8)
         let nonAlcoholicData = Data("\"non-alcoholic\"".utf8)
 
@@ -205,25 +251,9 @@ class CocktailModelTests: XCTestCase {
         XCTAssertEqual(nonAlcoholicType, .nonAlcoholic)
     }
 
-    // MARK: - FilterType Tests
-
-    func testFilterTypeTitles() {
-        XCTAssertEqual(FilterType.all.title, "All Cocktails")
-        XCTAssertEqual(FilterType.alcoholic.title, "Alcoholic Cocktails")
-        XCTAssertEqual(FilterType.nonAlcoholic.title, "Non-Alcoholic Cocktails")
-    }
-
-    func testFilterTypeAllCases() {
-        let allCases = FilterType.allCases
-        XCTAssertEqual(allCases.count, 3)
-        XCTAssertTrue(allCases.contains(.all))
-        XCTAssertTrue(allCases.contains(.alcoholic))
-        XCTAssertTrue(allCases.contains(.nonAlcoholic))
-    }
-
     // MARK: - Cocktail Creation Tests
 
-    func testCocktailCreation() {
+    func testCocktail_Creation_SetsAllProperties() {
         let cocktail = Cocktail(
             id: "creation-test",
             name: "Creation Test Cocktail",
@@ -250,7 +280,7 @@ class CocktailModelTests: XCTestCase {
         XCTAssertFalse(cocktail.isFavorite) // Default value
     }
 
-    func testCocktailIdentifiable() {
+    func testCocktail_IdentifiableConformance_ReturnsCorrectID() {
         let cocktail = Cocktail(
             id: "identifiable-test",
             name: "Identifiable Test",
@@ -270,7 +300,7 @@ class CocktailModelTests: XCTestCase {
 
     // MARK: - Performance Tests
 
-    func testCocktailDecodingPerformance() throws {
+    func testCocktail_DecodingPerformance_CompletesWithinTimeLimit() throws {
         let jsonString = """
         {
             "id": "performance-test",
@@ -282,17 +312,17 @@ class CocktailModelTests: XCTestCase {
             "imageName": "performance_test",
             "ingredients": [
                 {
-                    "amount": "1 oz",
+                    "imperialAmount": "1 oz",
                     "name": "Ingredient 1",
                     "metricAmount": "30 ml"
                 },
                 {
-                    "amount": "2 oz",
+                    "imperialAmount": "2 oz",
                     "name": "Ingredient 2",
                     "metricAmount": "60 ml"
                 },
                 {
-                    "amount": "3 oz",
+                    "imperialAmount": "3 oz",
                     "name": "Ingredient 3",
                     "metricAmount": "90 ml"
                 }

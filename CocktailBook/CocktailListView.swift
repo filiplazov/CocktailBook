@@ -2,7 +2,7 @@ import CocktailsKit
 import SwiftUI
 
 struct CocktailListView: View {
-    @ObservedObject var dataManager: CocktailDataManager
+    @ObservedObject var viewModel: CocktailListViewModel
     @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var authManager: AuthenticationManager
     @State private var showingSettings = false
@@ -12,7 +12,7 @@ struct CocktailListView: View {
         NavigationView {
             VStack(spacing: 0) {
                 // Filter Controls
-                Picker("Filter", selection: $dataManager.filterType) {
+                Picker("Filter", selection: $viewModel.filterType) {
                     ForEach(FilterType.allCases, id: \.self) { filter in
                         Text(filter.title).tag(filter)
                     }
@@ -21,12 +21,12 @@ struct CocktailListView: View {
                 .padding()
 
                 // Content
-                if dataManager.isLoading {
+                if viewModel.isLoading {
                     Spacer()
                     ProgressView("Loading cocktails...")
                         .font(.headline)
                     Spacer()
-                } else if let errorMessage = dataManager.errorMessage {
+                } else if let errorMessage = viewModel.errorMessage {
                     Spacer()
                     VStack(spacing: 20) {
                         Image(systemName: "exclamationmark.triangle")
@@ -44,23 +44,23 @@ struct CocktailListView: View {
 
                         Button("Retry") {
                             Task {
-                                await dataManager.loadData()
+                                await viewModel.loadData()
                             }
                         }
                         .buttonStyle(.borderedProminent)
                     }
                     Spacer()
                 } else {
-                    List(dataManager.filteredCocktails) { cocktail in
+                    List(viewModel.filteredCocktails) { cocktail in
                         NavigationLink(destination: CocktailDetailView(
                             cocktail: cocktail,
-                            dataManager: dataManager,
+                            viewModel: viewModel,
                             settingsManager: settingsManager
                         )) {
                             CocktailRowView(
                                 cocktail: cocktail
                             ) { cocktailID in
-                                dataManager.toggleFavorite(cocktailID: cocktailID)
+                                viewModel.toggleFavorite(cocktailID: cocktailID)
                             }
                         }
                     }
@@ -95,24 +95,24 @@ struct CocktailListView: View {
                 showingAuthentication = true
             } else {
                 // Load data if authentication is disabled or already authenticated
-                if dataManager.allCocktails.isEmpty && !dataManager.isLoading && dataManager.errorMessage == nil {
-                    await dataManager.loadData()
+                if viewModel.allCocktails.isEmpty && !viewModel.isLoading && viewModel.errorMessage == nil {
+                    await viewModel.loadData()
                 }
             }
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
             // Load data after successful authentication
-            if isAuthenticated && dataManager.allCocktails.isEmpty &&
-               !dataManager.isLoading && dataManager.errorMessage == nil {
+            if isAuthenticated && viewModel.allCocktails.isEmpty &&
+               !viewModel.isLoading && viewModel.errorMessage == nil {
                 Task {
-                    await dataManager.loadData()
+                    await viewModel.loadData()
                 }
             }
         }
     }
 
     private var navigationTitle: String {
-        switch dataManager.filterType {
+        switch viewModel.filterType {
         case .all:
             return "All Cocktails"
         case .alcoholic:
@@ -169,12 +169,12 @@ struct CocktailRowView: View {
 #Preview {
     @MainActor
     struct PreviewWrapper: View {
-        @StateObject private var dataManager = CocktailDataManager(cocktailsAPI: FakeCocktailsAPI())
+        @StateObject private var viewModel = CocktailListViewModel(cocktailsAPI: FakeCocktailsAPI())
         @StateObject private var settingsManager = SettingsManager()
         @StateObject private var authManager = AuthenticationManager()
 
         var body: some View {
-            CocktailListView(dataManager: dataManager, settingsManager: settingsManager, authManager: authManager)
+            CocktailListView(viewModel: viewModel, settingsManager: settingsManager, authManager: authManager)
         }
     }
 

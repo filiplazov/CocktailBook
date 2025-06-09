@@ -29,6 +29,6 @@ public struct Ingredient: Codable, Hashable, Identifiable, Sendable {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case imperialAmount = "amount", name, metricAmount
+        case imperialAmount, name, metricAmount
     }
 } 

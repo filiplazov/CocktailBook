@@ -3,14 +3,14 @@ import SwiftUI
 
 struct CocktailDetailView: View {
     let cocktail: Cocktail
-    let dataManager: CocktailDataManager
+    let viewModel: CocktailListViewModel
     let settingsManager: SettingsManager
 
     @State private var isFavorite: Bool
 
-    init(cocktail: Cocktail, dataManager: CocktailDataManager, settingsManager: SettingsManager) {
+    init(cocktail: Cocktail, viewModel: CocktailListViewModel, settingsManager: SettingsManager) {
         self.cocktail = cocktail
-        self.dataManager = dataManager
+        self.viewModel = viewModel
         self.settingsManager = settingsManager
         self._isFavorite = State(initialValue: cocktail.isFavorite)
     }
@@ -54,7 +54,7 @@ struct CocktailDetailView: View {
                             Image(systemName: "circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.orange)
-                            Text(dataManager.ingredientDisplayString(
+                            Text(viewModel.ingredientDisplayString(
                                 for: ingredient,
                                 measurementSystem: settingsManager.measurementSystem
                             ))
@@ -76,8 +76,8 @@ struct CocktailDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    dataManager.toggleFavorite(cocktailID: cocktail.id)
-                    isFavorite = dataManager.isFavorite(cocktailID: cocktail.id)
+                    viewModel.toggleFavorite(cocktailID: cocktail.id)
+                    isFavorite = viewModel.isFavorite(cocktailID: cocktail.id)
                 } label: {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundColor(isFavorite ? .red : .gray)
@@ -86,7 +86,7 @@ struct CocktailDetailView: View {
             }
         }
         .onAppear {
-            isFavorite = dataManager.isFavorite(cocktailID: cocktail.id)
+            isFavorite = viewModel.isFavorite(cocktailID: cocktail.id)
         }
     }
 }
@@ -109,7 +109,7 @@ struct CocktailDetailView: View {
                 Ingredient(imperialAmount: "", name: "Salt", metricAmount: "")
             ]
         ),
-        dataManager: CocktailDataManager(cocktailsAPI: FakeCocktailsAPI()),
+        viewModel: CocktailListViewModel(cocktailsAPI: FakeCocktailsAPI()),
         settingsManager: SettingsManager()
     )
 }
