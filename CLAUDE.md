@@ -37,7 +37,7 @@ This format clearly identifies what's being tested, under what conditions, and w
 
 ### Testing
 - **Run CocktailsKit tests:** `swift test` (from CocktailsKit directory)
-- **Run main app tests:** `xcodebuild test -scheme CocktailBook -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" -only-testing:CocktailBookTests -quiet`
+- **Run main app tests:** `cd app && xcodebuild test -scheme CocktailBook -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" -only-testing:CocktailBookTests -quiet`
 
 ### Linting
 - **SwiftLint:** Runs automatically during build, or manually via `scripts/swiftlint.sh`

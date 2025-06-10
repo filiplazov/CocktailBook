@@ -3,14 +3,14 @@
 
 # Included paths
 included:
-  - CocktailBook
-  - CocktailBookTests
+  - app/CocktailBook
+  - app/CocktailBookTests
 
 # Excluded paths  
 excluded:
   - .build
   - .git
-  - CocktailBook.xcodeproj
+  - app/CocktailBook.xcodeproj
   - Package.swift
   - .cursor
   - MDAssets
