@@ -1,6 +1,6 @@
 import Foundation
 import CocktailsModels
 
-public protocol CocktailsAPI: AnyObject, Sendable {
+public protocol CocktailsAPI: Sendable {
     func fetchCocktails() async throws -> [Cocktail]
 } 

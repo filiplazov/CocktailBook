@@ -16,6 +16,7 @@ struct SettingsView: View {
                         Image(systemName: "lock.shield")
                             .foregroundColor(.white)
                             .frame(width: 20, height: 20)
+                            .padding(4)
                             .background(Color.red)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
 
@@ -33,6 +34,7 @@ struct SettingsView: View {
                             Image(systemName: "faceid")
                                 .foregroundColor(.white)
                                 .frame(width: 20, height: 20)
+                                .padding(4)
                                 .background(Color.green)
                                 .clipShape(RoundedRectangle(cornerRadius: 4))
 
@@ -72,6 +74,7 @@ struct SettingsView: View {
                         Image(systemName: "ruler")
                             .foregroundColor(.white)
                             .frame(width: 20, height: 20)
+                            .padding(4)
                             .background(Color.blue)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
 
@@ -87,6 +90,23 @@ struct SettingsView: View {
                 } footer: {
                     Text("Choose between Imperial (oz, fl oz) and Metric (ml, cl) measurements for " +
                          "cocktail ingredients.")
+                }
+                // MARK: - Developer Options Section
+                Section {
+                    HStack {
+                        Image(systemName: "hammer.fill")
+                            .foregroundColor(.white)
+                            .frame(width: 20, height: 20)
+                            .padding(4)
+                            .background(Color.orange)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                        Toggle("Use Fake API", isOn: $settingsManager.useFakeAPI)
+                    }
+                } header: {
+                    Text("Developer Options")
+                } footer: {
+                    Text("When enabled, the app will use mock data instead of connecting to the server. " +
+                         "This setting takes effect the next time the app launches.")
                 }
             }
             .navigationTitle("Settings")

@@ -1,8 +1,8 @@
-# CocktailBook iOS App - Architecture & Technology Summary
+# CocktailBook - Full-Stack Architecture & Technology Summary
 
 ## 📱 Project Overview
 
-**CocktailBook** is a modern iOS application built with SwiftUI and Swift Concurrency, showcasing a clean architecture approach for displaying and managing cocktail recipes. The app demonstrates best practices in iOS development including async/await programming, dependency injection, comprehensive testing, and clean code organization.
+**CocktailBook** is a full-stack application featuring a Swift web server backend and an iOS client built with SwiftUI and Swift Concurrency. The project showcases a clean architecture approach for displaying and managing cocktail recipes, with shared domain models between client and server. The implementation demonstrates best practices in iOS development and server-side Swift including async/await programming, dependency injection, comprehensive testing, and clean code organization.
 
 ## 🏗 Architecture Pattern
 
@@ -31,11 +31,18 @@
 - **Package Manager**: Swift Package Manager (SPM)
 
 ### Dependencies
-- **CocktailsKit** (Local Swift Package): Core API layer and data abstractions
+- **CocktailsKit** (Local Swift Package): Core API layer and shared domain models
+  - **CocktailsModels** target: Shared domain models used by both client and server
   - Contains `CocktailsAPI` protocol and `CocktailsAPIError` definitions
   - Includes `FakeCocktailsAPI` actor for development and testing
+  - Includes `NetworkCocktailsAPI` actor for production server communication
   - Provides sample cocktail data (JSON) for realistic testing
   - Thread-safe actor-based implementation with Swift Concurrency
+- **Server** (Swift/Hummingbird): RESTful web server backend
+  - Built with Hummingbird web framework
+  - Uses shared `CocktailsModels` from CocktailsKit
+  - Provides REST API with OpenAPI 3.1 specification
+  - Serves cocktail data with JSON responses
 
 ### Development Tools
 - **Xcode**: 16.4.0
@@ -53,56 +60,82 @@
 
 ```
 CocktailBook/
-├── 📱 App Entry Point
-│   └── CocktailBookApp.swift
-├── 🎨 Views (SwiftUI)
-│   ├── CocktailListView.swift
-│   └── CocktailDetailView.swift
-├── 🧠 Business Logic
-│   └── CocktailListViewModel.swift
-├── 📊 Models
-│   └── Cocktail.swift
-├── 🔧 Utilities
-│   └── UserDefaultsProtocol.swift
-└── 📦 Resources
-    ├── Assets.xcassets/
-    ├── Base.lproj/
-    └── Info.plist
-
-CocktailBookTests/
-├── 🧪 Test Files
-│   ├── CocktailListViewModelTests.swift
-│   └── CocktailModelTests.swift
-└── 🎭 Test Mocks
-    ├── MockCocktailsAPI.swift
-    ├── MockUserDefaults.swift
-    └── MockData.swift
-
-CocktailsKit/ (Swift Package)
-├── 📦 Package.swift
-├── 🌐 Sources/CocktailsKit/
-│   ├── CocktailsAPI.swift (Protocol)
-│   ├── CocktailsAPIError.swift (Error Types)
-│   └── FakeCocktailsAPI.swift (Actor Implementation)
-└── 📊 Resources/
-    └── sample.json (Test Data)
-
-Documentation/
-├── 📝 README.md
-└── 📋 ARCHITECTURE.md (this file)
+├── 📱 app/ (iOS Client)
+│   ├── CocktailBook.xcodeproj
+│   ├── CocktailBook/
+│   │   ├── CocktailBookApp.swift
+│   │   ├── Views/
+│   │   │   ├── CocktailListView.swift
+│   │   │   ├── CocktailDetailView.swift
+│   │   │   ├── SettingsView.swift
+│   │   │   └── AuthenticationView.swift
+│   │   ├── ViewModels/
+│   │   │   ├── CocktailListViewModel.swift
+│   │   │   └── SettingsManager.swift
+│   │   ├── Models/
+│   │   │   └── FilterType.swift
+│   │   ├── Authentication/
+│   │   │   ├── AuthenticationManager.swift
+│   │   │   ├── AuthenticationResult.swift
+│   │   │   └── BiometricAuthenticationStatus.swift
+│   │   ├── Utilities/
+│   │   │   ├── UserDefaultsProtocol.swift
+│   │   │   └── MeasurementSystem.swift
+│   │   └── Resources/
+│   │       ├── Assets.xcassets/
+│   │       ├── Base.lproj/
+│   │       └── Info.plist
+│   └── CocktailBookTests/
+│       ├── Test Files/
+│       └── Mocks/
+├── 🌐 server/ (Swift Server)
+│   ├── Package.swift
+│   ├── Sources/CocktailsServer/
+│   │   ├── CocktailsServer.swift (Main Entry Point)
+│   │   ├── Controllers/
+│   │   │   └── CocktailsController.swift
+│   │   ├── Data/
+│   │   │   └── CocktailsData.swift
+│   │   └── Extensions/
+│   │       └── Cocktail+Hummingbird.swift
+│   ├── openapi.yaml (API Specification)
+│   ├── api.paw (Paw Collection)
+│   └── README.md
+├── 📦 CocktailsKit/ (Shared Swift Package)
+│   ├── Package.swift
+│   ├── Sources/
+│   │   ├── CocktailsKit/
+│   │   │   ├── CocktailsAPI.swift (Protocol)
+│   │   │   ├── CocktailsAPIError.swift (Error Types)
+│   │   │   ├── FakeCocktailsAPI.swift (Mock Implementation)
+│   │   │   ├── NetworkCocktailsAPI.swift (Network Implementation)
+│   │   │   ├── Exports.swift (Re-exports)
+│   │   │   └── sample.json (Test Data)
+│   │   └── CocktailsModels/ (Shared Domain Models)
+│   │       ├── Cocktail.swift
+│   │       ├── Ingredient.swift
+│   │       └── CocktailType.swift
+│   └── Tests/CocktailsKitTests/
+└── 📝 Documentation/
+    ├── README.md
+    ├── ARCHITECTURE.md (this file)
+    ├── AUTHENTICATION.md
+    └── XCODE_INTEGRATION.md
 ```
 
 ---
 
 ## 🏛 Core Components
 
-### 1. CocktailsKit Swift Package (API Layer)
-**Purpose**: Modular API abstraction layer providing network protocols and implementations
+### 1. CocktailsKit Swift Package (Shared Models & API Layer)
+**Purpose**: Modular package providing shared domain models and API abstractions for both client and server
 
 **Key Components**:
+- **CocktailsModels Target**: Shared domain models (`Cocktail`, `Ingredient`, `CocktailType`)
 - **CocktailsAPI Protocol**: Defines async API contract for fetching cocktail data
-- **CocktailsAPIError**: Sendable error types for API failures (`unavailable`)
+- **CocktailsAPIError**: Sendable error types for API failures (`unavailable`, `invalidResponse`)
 - **FakeCocktailsAPI Actor**: Thread-safe mock implementation for development/testing
+- **NetworkCocktailsAPI Actor**: Production HTTP client for server communication
 - **sample.json**: Realistic test data with complete cocktail information
 
 **Architecture Benefits**:
@@ -127,7 +160,38 @@ actor FakeCocktailsAPI: CocktailsAPI {
 - Clean separation from main app logic
 - Reusable across different targets (app, tests, previews)
 
-### 2. CocktailListViewModel (ViewModel)
+### 2. Cocktails Server (Swift Backend)
+**Purpose**: RESTful web server backend built with Hummingbird framework
+
+**Key Components**:
+- **CocktailsServer.swift**: Main entry point with ArgumentParser CLI support
+- **CocktailsController.swift**: HTTP route handlers for cocktail endpoints
+- **CocktailsData.swift**: Static cocktail data converted to use shared models
+- **Cocktail+Hummingbird.swift**: ResponseEncodable extension for JSON serialization
+
+**Server Architecture**:
+```swift
+// Hummingbird application setup
+let router = Router()
+let cocktailsController = CocktailsController(logger: logger)
+cocktailsController.addRoutes(to: router)
+
+// RESTful API endpoints
+GET /api/v1/cocktails              // All cocktails
+GET /api/v1/cocktails/{id}         // Cocktail by ID
+GET /api/v1/cocktails/type/{type}  // Filter by type
+GET /health                        // Health check
+```
+
+**Key Features**:
+- Swift Concurrency with async/await route handlers
+- Shared domain models via CocktailsKit package
+- OpenAPI 3.1 specification for API documentation
+- Structured error responses with HTTP status codes
+- Command-line interface with configurable host/port
+- Production-ready logging with structured output
+
+### 3. CocktailListViewModel (ViewModel)
 **Purpose**: Central business logic controller implementing the ViewModel pattern with @MainActor
 
 **Key Responsibilities**:
@@ -321,32 +385,42 @@ All source files use consistent MARK comments for organization:
 
 ## 🔄 Data Flow Architecture
 
-### 1. App Launch
+### 1. Server Startup
 ```
-CocktailBookApp → CocktailListView → CocktailListViewModel.loadData() async
-```
-
-### 2. Async Data Loading Flow
-```
-CocktailListViewModel → CocktailsKit.CocktailsAPI (actor) → JSON Response → Sendable Cocktail Models → @Published Properties → SwiftUI Update
+CocktailsServer.swift → ArgumentParser CLI → Hummingbird Application → Router Setup → CocktailsController Registration → HTTP Server Listening on Port 8080
 ```
 
-### 3. User Interaction Flow
+### 2. App Launch
+```
+CocktailBookApp → CocktailListView → CocktailListViewModel.loadData() async → NetworkCocktailsAPI
+```
+
+### 3. Client-Server Communication Flow
+```
+iOS App → NetworkCocktailsAPI → HTTP Request → CocktailsServer → CocktailsController → CocktailsData → Shared Models → JSON Response → Client Parsing → @Published Properties → SwiftUI Update
+```
+
+### 4. API Request Flow (Example: GET /api/v1/cocktails)
+```
+NetworkCocktailsAPI.fetchCocktails() → URLSession.data(from: URL) → CocktailsController.getAllCocktails() → CocktailsData.cocktails → [Cocktail] → JSON Encoding → HTTP 200 Response → Client Decoding → UI Update
+```
+
+### 5. User Interaction Flow
 ```
 User Tap → SwiftUI Action → CocktailListViewModel Async Method → State Update → UI Refresh
 ```
 
-### 4. Filtering System
+### 6. Filtering System
 ```
 Filter Selection → FilterType Update → Computed Property → Automatic Filtering → UI Update
 ```
 
-### 5. Settings & Measurement System Flow
+### 7. Settings & Measurement System Flow
 ```
 Settings Button → SettingsView Modal → Measurement Toggle → SettingsManager Update → UserDefaults Persistence → Detail View Refresh
 ```
 
-### 6. Ingredient Display Flow
+### 8. Ingredient Display Flow
 ```
 CocktailDetailView → SettingsManager.measurementSystem → Ingredient.displayString OR Ingredient.metricDisplayString → Dynamic UI Update
 ```
@@ -356,6 +430,9 @@ CocktailDetailView → SettingsManager.measurementSystem → Ingredient.displayS
 ## 🚀 Key Features Implemented
 
 ### ✅ Core Functionality
+- [x] **Client-Server Architecture**: Full-stack Swift implementation
+- [x] **RESTful API**: Server endpoints for cocktail data with OpenAPI specification
+- [x] **Shared Domain Models**: CocktailsKit package used by both client and server
 - [x] Cocktail list display with images and basic info
 - [x] Detailed cocktail view with full information
 - [x] Category filtering (All/Alcoholic/Non-Alcoholic)
@@ -366,9 +443,13 @@ CocktailDetailView → SettingsManager.measurementSystem → Ingredient.displayS
 - [x] Measurement system toggle (Imperial/Metric)
 - [x] Persistent user preferences with UserDefaults
 - [x] Dynamic ingredient display based on measurement preference
+- [x] **Biometric Authentication**: TouchID/FaceID integration
+- [x] **Network Communication**: HTTP client for server communication
 
 ### ✅ Technical Excellence
-- [x] Swift Concurrency with async/await programming
+- [x] **Full-Stack Swift**: Server-side Swift with Hummingbird web framework
+- [x] **Shared Package Architecture**: Domain models reused between client and server
+- [x] Swift Concurrency with async/await programming (client and server)
 - [x] Comprehensive unit test coverage (30+ tests including settings)
 - [x] Clean architecture with separation of concerns
 - [x] Dependency injection for testability
@@ -377,6 +458,8 @@ CocktailDetailView → SettingsManager.measurementSystem → Ingredient.displayS
 - [x] Thread-safe design with @MainActor and Sendable types
 - [x] Observable state management for real-time UI updates
 - [x] UserDefaults abstraction for testable persistence
+- [x] **API Documentation**: OpenAPI 3.1 specification with Paw collection
+- [x] **Production-Ready Server**: CLI interface, structured logging, health checks
 
 ### ✅ Code Quality
 - [x] Consistent MARK comment organization

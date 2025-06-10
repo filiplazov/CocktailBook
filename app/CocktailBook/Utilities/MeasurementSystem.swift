@@ -26,12 +26,19 @@ final class SettingsManager: ObservableObject {
         }
     }
 
+    @Published var useFakeAPI: Bool {
+        didSet {
+            userDefaults.set(useFakeAPI, forKey: UserDefaultsKeys.useFakeAPI)
+        }
+    }
+
     private let userDefaults: UserDefaultsProtocol
 
     // MARK: - User Defaults Keys
 
     private enum UserDefaultsKeys {
         static let measurementSystem = "measurementSystem"
+        static let useFakeAPI = "useFakeAPI"
     }
 
     // MARK: - Initialization
@@ -47,6 +54,13 @@ final class SettingsManager: ObservableObject {
             self.measurementSystem = .imperial
             // Save the default value to UserDefaults
             userDefaults.set(MeasurementSystem.imperial.rawValue, forKey: UserDefaultsKeys.measurementSystem)
+        }
+
+        // Load saved fake API setting or default to false
+        self.useFakeAPI = userDefaults.object(forKey: UserDefaultsKeys.useFakeAPI) as? Bool ?? false
+        if userDefaults.object(forKey: UserDefaultsKeys.useFakeAPI) == nil {
+            // Save the default value to UserDefaults
+            userDefaults.set(false, forKey: UserDefaultsKeys.useFakeAPI)
         }
     }
 }

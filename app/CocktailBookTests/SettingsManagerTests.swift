@@ -20,9 +20,10 @@ final class SettingsManagerTests: XCTestCase {
 
     // MARK: - Initialization Tests
 
-    func testInit_WithNoSavedData_DefaultsToImperialSystem() {
+    func testInit_WithNoSavedData_DefaultsToImperialSystemAndFakeAPIDisabled() {
         // Given
         mockUserDefaults.removeObject(forKey: "measurementSystem")
+        mockUserDefaults.removeObject(forKey: "useFakeAPI")
 
         // When
         let manager = SettingsManager(userDefaults: mockUserDefaults)
@@ -30,6 +31,8 @@ final class SettingsManagerTests: XCTestCase {
         // Then
         XCTAssertEqual(manager.measurementSystem, .imperial)
         XCTAssertEqual(mockUserDefaults.object(forKey: "measurementSystem") as? String, "imperial")
+        XCTAssertFalse(manager.useFakeAPI)
+        XCTAssertEqual(mockUserDefaults.object(forKey: "useFakeAPI") as? Bool, false)
     }
 
     func testInit_WithSavedMetricSystem_LoadsSavedValue() {
@@ -130,6 +133,67 @@ final class SettingsManagerTests: XCTestCase {
 
         // Then
         XCTAssertEqual(newManager.measurementSystem, .metric)
+    }
+
+    // MARK: - Fake API Tests
+
+    func testInit_WithSavedFakeAPIEnabled_LoadsSavedValue() {
+        // Given
+        mockUserDefaults.set(true, forKey: "useFakeAPI")
+
+        // When
+        let manager = SettingsManager(userDefaults: mockUserDefaults)
+
+        // Then
+        XCTAssertTrue(manager.useFakeAPI)
+    }
+
+    func testFakeAPIUpdate_ToEnabled_SavesAndUpdatesValue() {
+        // Given
+        XCTAssertFalse(settingsManager.useFakeAPI)
+
+        // When
+        settingsManager.useFakeAPI = true
+
+        // Then
+        XCTAssertTrue(settingsManager.useFakeAPI)
+        XCTAssertEqual(mockUserDefaults.object(forKey: "useFakeAPI") as? Bool, true)
+    }
+
+    func testFakeAPIUpdate_ToDisabled_SavesAndUpdatesValue() {
+        // Given
+        settingsManager.useFakeAPI = true
+
+        // When
+        settingsManager.useFakeAPI = false
+
+        // Then
+        XCTAssertFalse(settingsManager.useFakeAPI)
+        XCTAssertEqual(mockUserDefaults.object(forKey: "useFakeAPI") as? Bool, false)
+    }
+
+    func testFakeAPIPublisher_OnValueChange_EmitsNewValues() {
+        // Given
+        var publishedValues: [Bool] = []
+        let expectation = XCTestExpectation(description: "Publisher should emit values")
+
+        let cancellable = settingsManager.$useFakeAPI
+            .sink { value in
+                publishedValues.append(value)
+                if publishedValues.count == 3 {
+                    expectation.fulfill()
+                }
+            }
+
+        // When
+        settingsManager.useFakeAPI = true
+        settingsManager.useFakeAPI = false
+
+        // Then
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertEqual(publishedValues, [false, true, false])
+
+        cancellable.cancel()
     }
 }
 

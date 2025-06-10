@@ -30,7 +30,7 @@ final class CocktailListViewModel: ObservableObject {
 
     // MARK: - Initialization
     init(
-        cocktailsAPI: CocktailsAPI = FakeCocktailsAPI(),
+        cocktailsAPI: CocktailsAPI = NetworkCocktailsAPI(),
         userDefaults: UserDefaultsProtocol = UserDefaults.standard
     ) {
         self.cocktailsAPI = cocktailsAPI
@@ -46,17 +46,23 @@ final class CocktailListViewModel: ObservableObject {
 
     /// Loads all cocktails from the API
     func loadData() async {
+        print("📱 CocktailListViewModel.loadData() called")
         isLoading = true
         errorMessage = nil
 
         do {
+            print("📱 Calling cocktailsAPI.fetchCocktails()")
             allCocktails = try await cocktailsAPI.fetchCocktails()
+            print("📱 Received \(allCocktails.count) cocktails from API")
             updateCocktailFavoriteStatus()
+            print("📱 Updated favorite status, filteredCocktails count: \(filteredCocktails.count)")
         } catch {
+            print("📱 Error in loadData: \(error)")
             handleError(error)
         }
 
         isLoading = false
+      print("📱 loadData completed, isLoading: \(isLoading), error message: \(String(describing: errorMessage))")
     }
 
     /// Toggles the favorite status of a cocktail

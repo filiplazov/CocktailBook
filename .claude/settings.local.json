@@ -16,7 +16,18 @@
       "Bash(./scripts/swiftlint.sh:*)",
       "Bash(git add:*)",
       "Bash(swift test:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(cp:*)",
+      "Bash(swift run:*)",
+      "Bash(timeout:*)",
+      "Bash(swift build:*)",
+      "Bash(curl:*)",
+      "Bash(kill:*)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(npm start)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }

@@ -1,4 +1,4 @@
-// swiftlint:disable file_length type_body_length
+// swiftlint:disable type_body_length
 @testable import CocktailBook
 import LocalAuthentication
 import XCTest
