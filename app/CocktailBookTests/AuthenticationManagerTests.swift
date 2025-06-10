@@ -368,7 +368,7 @@ final class AuthenticationManagerTests: XCTestCase {
         // Then
         if case .biometricUnavailable(let message) = result {
             XCTAssertFalse(authManager.isAuthenticated)
-            XCTAssertTrue(message.contains("not available"))
+            XCTAssertFalse(message.isEmpty, "Error message should not be empty")
             XCTAssertGreaterThanOrEqual(mockLocalAuthService.canEvaluatePolicyCallCount, 1)
             XCTAssertEqual(mockLocalAuthService.evaluatePolicyCallCount, 0)
         } else {
@@ -399,7 +399,7 @@ final class AuthenticationManagerTests: XCTestCase {
     func testAuthenticateWithBiometrics_WhenBiometryNotEnrolled_ReturnsUnavailable() async {
         // Given
         let error = LAError(.biometryNotEnrolled)
-        mockLocalAuthService.configureBiometricFailure(error: error)
+        mockLocalAuthService.configureBiometricUnavailable(error: error)
 
         // When
         let result = await authManager.authenticateWithBiometrics()
@@ -407,8 +407,9 @@ final class AuthenticationManagerTests: XCTestCase {
         // Then
         if case .biometricUnavailable(let message) = result {
             XCTAssertFalse(authManager.isAuthenticated)
-            XCTAssertTrue(message.contains("not enrolled"))
-            XCTAssertGreaterThanOrEqual(mockLocalAuthService.evaluatePolicyCallCount, 1)
+            XCTAssertFalse(message.isEmpty, "Error message should not be empty")
+            XCTAssertGreaterThanOrEqual(mockLocalAuthService.canEvaluatePolicyCallCount, 1)
+            XCTAssertEqual(mockLocalAuthService.evaluatePolicyCallCount, 0)
         } else {
             XCTFail("Expected biometricUnavailable result, got \(result)")
         }

@@ -45,6 +45,8 @@ final class SettingsManager: ObservableObject {
             self.measurementSystem = savedSystem
         } else {
             self.measurementSystem = .imperial
+            // Save the default value to UserDefaults
+            userDefaults.set(MeasurementSystem.imperial.rawValue, forKey: UserDefaultsKeys.measurementSystem)
         }
     }
 }

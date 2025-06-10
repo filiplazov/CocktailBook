@@ -27,6 +27,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AE17F0C92DF448D20086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E8324E75262076EB00FD2124 /* CocktailBook */;
+		};
 		AE17F0D82DF448DA0086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -37,7 +44,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		AE17F0C52DF448D20086F988 /* CocktailBook */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CocktailBook; sourceTree = "<group>"; };
+		AE17F0C52DF448D20086F988 /* CocktailBook */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (AE17F0C92DF448D20086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CocktailBook; sourceTree = "<group>"; };
 		AE17F0D42DF448DA0086F988 /* CocktailBookTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (AE17F0D82DF448DA0086F988 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CocktailBookTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
